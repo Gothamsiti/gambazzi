@@ -1,0 +1,60 @@
+$fr: 80;
+
+/* Colori di progetto */
+$blue: #1C2D7E;
+$white: #FFFFFF;
+$bkg: #EEEEEE;
+$text: #8C8C8C;
+$greyMiddle: #888888;
+$black: #000000;
+$greyDark: #323232;
+$greyLight: #D3D3D3;
+
+$defaultColor: $black;
+
+$font-sans: 'Raleway', sans-serif;
+$font-serif: 'Bodoni Moda', serif;
+
+$dt:.5s;
+$de: cubic-bezier(0.000, 0.000, 0.580, 1.000);
+
+@function vh($unit){
+    @return calc(var(--vh, 1vh) * #{$unit});
+}
+@function vw($unit){
+    @return calc(var(--vw, 1vw) * #{$unit});
+}
+@function mw($unit){
+    @return calc(var(--vw, 1vw) * 100 / 80 * #{$unit});
+}
+@mixin media($w) {
+    @media screen and (max-width:#{$w}px) { @content; }
+}
+// X di chiusura delle modali, centrata sull'angolo in alto a destra del contenuto
+@mixin modalClose($offset: mw(4)) {
+    padding: 0;
+    position: absolute;
+    top: $offset;
+    right: $offset;
+    width: 30px;
+    height: 30px;
+    background: $black;
+    border-radius: 50%;
+    transform: translate(50%, -50%);
+    cursor: pointer;
+    &::before, &::after{
+        content: '';
+        position: absolute;
+        display: block;
+        top: 15px;
+        left: 15px;
+        background: $white;
+        width: 1px;
+        height: 20px;
+        transform: translate(-1px, -10px) rotate(45deg);
+    }
+    &::after{
+        transform: translate(-1px, -10px) rotate(-45deg);
+    }
+}
+$dbr: mw(1);
