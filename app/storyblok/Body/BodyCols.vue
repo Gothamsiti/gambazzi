@@ -331,5 +331,33 @@
             }
         }
     }
+
+    &#homepage-head{
+        position: relative;
+        align-items: flex-start;
+        justify-content: flex-start;
+        > .SimpleImage, > .SimpleVideo{
+            width: 100%;
+            height: 100vh;
+            flex: 0 0 100vh;
+        }
+        > .SimpleImage{
+            margin-top: -100vh;
+        }
+        > .BodySimpleText{
+            left: 0;
+            top: 0;
+            left: 0;
+            position: sticky;
+            z-index: 2;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        > .SimpleVideo{
+            z-index: 3;
+        }
+    }
 }
 </style>

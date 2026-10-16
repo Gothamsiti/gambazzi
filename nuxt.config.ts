@@ -85,8 +85,7 @@ export default defineNuxtConfig({
   fonts: {
     defaults: { subsets: ['latin'] },
     families: [
-      { name: 'Bodoni Moda', provider: 'google', weights: [400, 700], preload: true },
-      { name: 'Raleway', provider: 'google', weights: [400, 700], preload: true },
+      { name: 'Onest', provider: 'google', weights: [300, 700], preload: true }
     ],
   },
   icon: {

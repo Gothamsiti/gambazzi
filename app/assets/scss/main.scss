@@ -8,7 +8,7 @@ html,body{
 	font-family: $font-sans;
 	font-style: normal;
 	font-size: 10px;
-	font-weight: 400;
+	font-weight: 300;
 	color: $defaultColor;
   	scroll-snap-type: y proximity;
 	text-edge: cap;
@@ -43,80 +43,35 @@ html,body{
 	}
 	h1,h2,h3,h4,h5,h6,p,
 	.h1,.h2,.h3,.h4,.h5,.h6,.p{
-		font-weight: 400;
+		font-weight: 300;
 		line-height: normal;
 		display: inline-block;
         font-family: $font-sans;
 	}
 	h1,.h1{
-        font-family: $font-serif;
-		font-size: 8.1rem;
+        font-family: $font-sans;
+		font-size: 5.8rem;
 		line-height: 1.05em;
-		@include media(1024){
-			font-size: 7rem;
-		}
-		@include media(768){
-			font-size: 6rem;
-		}
-		@include media(550){
-			font-size: 5rem;
-		}
-		@include media(480){
-			font-size: 3.6rem;
-		}
     }
 	h2,.h2{
-		font-size: 8rem;
+		font-size: 5.2rem;
 		line-height: 1em;
-		@include media(768){
-			font-size: 5rem;
-		}
-		@include media(550){
-			font-size: 4rem;
-		}
-		@include media(480){
-			font-size: 3.4rem;
-		}
     }
 	h3,.h3{
 		font-size: 4rem;
 		line-height: 1em;
-		@include media(768){
-			font-size: 3rem;
-		}
-		@include media(550){
-			font-size: 2.5rem;
-		}
-		@include media(480){
-			font-size: 2.4rem;
-		}
     }
 	h4,.h4{
-		font-size: 3rem;
-		line-height: auto;
-		@include media(768){
-			font-size: 2.5rem;
-		}
-		@include media(550){
-			font-size: 2rem;
-		}
+		font-size: 2.2rem;
+
     }
 	h5,.h5{
 		font-size: 2.4rem;
 		line-height: auto;
-		@include media(768){
-			font-size: 2rem;
-		}
-		@include media(550){
-			font-size: 1.8rem;
-		}
     }
 	p,.p{
 		font-size: 1.6rem;
 		line-height: auto;
-		@include media(768){
-			font-size: 1.4rem;
-		}
 	}
 	.hidemobile{
 		@include media(500){
@@ -139,6 +94,8 @@ html,body{
 	.greyMiddle{ color: $greyMiddle !important; }
 	.black{ color: $black !important; }
 	.greyDark{ color: $greyDark !important; }
+
+	.background-black{ background: $black !important; }
 
 
 	.full-height{

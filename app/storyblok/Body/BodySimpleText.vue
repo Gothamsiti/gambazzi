@@ -1,5 +1,5 @@
 <template lang="pug">
-section.BodySimpleText(ref="$el" :class="mw.classes" :style="bgStyle" :id="blok.id")
+section.BodySimpleText(ref="$el" :class="[blok.class, ...mw.classes]" :style="bgStyle" :id="blok.id")
 	| {{ animationsInited.value }}
 	StoryblokRichText(v-if="blok.text" :document="parsedText" :components="richTextComponents")
 </template>
