@@ -4,7 +4,8 @@
 </template>
 <script setup>
 	const {blok} = defineProps(["blok"]);
-	const { story: {value : { content : _footer } } } = await useAsyncGothamStoryblok('system/mainfooter');
+	const { sbEditor } = useStoryblokEditor();
+	const { story: {value : { content : _footer } } } = await useAsyncGothamStoryblok('system/mainfooter',{ isEditor: sbEditor.value });
 </script>
 <style lang="scss">
 #MainFooter{

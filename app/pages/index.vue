@@ -9,10 +9,8 @@
     if(!endpoint) throw createError({ statusCode: 404, statusMessage: 'Endpoint not found', fatal: true });
     const { sbEditor } = useStoryblokEditor();
     let fullslug = route?.params?.fullslug;
-    if(fullslug){
-        if(fullslug[fullslug.length-1] == "") fullslug.pop();
-    }
-    const params = { isEditor: sbEditor.value };
+    if(fullslug && fullslug[fullslug.length-1] == "") fullslug.pop();
+    const params = { isEditor: sbEditor.value, isMainStory: true };
     const { story, rels } = await useAsyncGothamStoryblok(endpoint,params);
     useSeo(story);
     onMounted(() => {

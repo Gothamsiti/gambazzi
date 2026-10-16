@@ -9,7 +9,9 @@ header#mainHeader(v-if="header" ref="$header" :class="[{scrolled: (scrolled && s
 </template>
 <script setup>
     const { sizes,scroll } = useSizes();
-	const { story } = await useAsyncGothamStoryblok("system/mainheader");
+    const { sbEditor } = useStoryblokEditor();
+    console.log("sbEditor.value",sbEditor.value);
+	const { story } = await useAsyncGothamStoryblok("system/mainheader",{ isEditor: sbEditor.value });
 	const header = computed(() => {
 		if (!story.value) return null;
 		return story.value.content;
