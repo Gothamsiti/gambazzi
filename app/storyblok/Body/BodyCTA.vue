@@ -1,5 +1,5 @@
 <template lang="pug">
-NuxtLink.BodyCTA(:to="$__url(blok.link?.cached_url+(blok.link?.cached_url?.includes('#')?'':anchor||''))" :class="mw.classes" :target="blok.link?.target" :style="ctaStyle" @click.capture="onClick" ref="$el")
+NuxtLink.BodyCTA(:to="$__url(blok.link?.cached_url+(blok.link?.cached_url?.includes('#')?'':anchor||''))" :class="mw.classes" :target="blok.link?.target" :style="ctaStyle" @click.capture="onClick" ref="$el" :aria-label="blok.label")
 	.icon(v-if="blok.icon")
 		Icon(:name="blok.icon")
 	.label(v-if="blok.label") {{ blok.label }}
@@ -64,6 +64,14 @@ NuxtLink.BodyCTA(:to="$__url(blok.link?.cached_url+(blok.link?.cached_url?.inclu
 			flex: 0 0 auto;
 			padding: 0 mw(1);
 			text-transform: uppercase;
+			@include media(660){
+				padding: 0 mw(2);
+			}
+		}
+		&.iconOnly{
+			.label{
+				display: none;
+			}
 		}
 		&.black{
 			color: $white !important;

@@ -25,10 +25,11 @@
 
     const { $__svg } = useNuxtApp();
     const isSvg = computed(() => /\.svg(\?|$)/i.test(blok?.filename || ''));
-    const { data: svg } = useAsyncData(
-        () => `svg:${blok?.filename}`,
-        () => isSvg.value ? $__svg(blok.filename) : Promise.resolve(null),
-    );
+    // l'async data serve solo alle SVG da inlineare: per le altre immagini aggiungerebbe al payload
+    // una voce `svg:<url>` con valore null e un fetch vuoto in SSR
+    const { data: svg } = isSvg.value
+        ? useAsyncData(() => `svg:${blok?.filename}`, () => $__svg(blok.filename))
+        : { data: ref(null) };
     const image = computed(() => isSvg.value ? null : useStoryblokImage(blok?.filename, sizes));
 
     const alt = computed(() => {

@@ -13,19 +13,13 @@
             Icon(:name="'gotham:arrow-down'")
 </template>
 <script setup>
+    import { gsap } from "gsap";
     const { sbEditor } = useStoryblokEditor();
     const {blok}=defineProps(['blok', 'noeditable', 'story', 'rels']);
-    const mw = useMwClass(blok.customClass);
+    const mw = useMwClass(() => blok.customClass);
     const isHorizontalScroll = computed(() => mw.classes.includes('horizontalScroll'));
     const emit = defineEmits(['proceed']);
-    const toUrl = (filename) => {
-        const base = filename.replace('https://a.storyblok.com', '/storyblokasset');
-        const filters = [];
-        if (blok.webp) filters.push('format(webp)');
-        if (blok.quality) filters.push(`quality(${blok.quality})`);
-        const transform = filters.length ? `/m/filters:${filters.join(':')}` : '';
-        return `url('${base}${transform}')`;
-    };
+    const toUrl = (filename) => `url('${storyblokBackgroundUrl(filename, { webp: blok.webp !== false, quality: blok.quality })}')`;
     const booted = ref(false);
     const bgStyle = computed(() => ({
         backgroundColor: blok.backgroundColor,
@@ -41,6 +35,7 @@
     const {
         showScrollbar,
         thumbStyle,
+        arrowsStyle,
         onThumbPointerDown,
         onTrackPointerDown,
         onTrackClick,
@@ -54,53 +49,9 @@
         enabled: isHorizontalScroll,
     });
 
-    const scrollEl = computed(() => getScrollEl());
-
-    const arrowsRect = ref({ top: 0, left: 0, width: 0, height: 0 });
-    const arrowsStyle = computed(() => ({
-        top: arrowsRect.value.top + 'px',
-        left: arrowsRect.value.left + 'px',
-        width: arrowsRect.value.width + 'px',
-        height: arrowsRect.value.height + 'px',
-    }));
-
-    const updateArrowsRect = () => {
-        const el = scrollEl.value;
-        if (!el) return;
-        arrowsRect.value = {
-            top: el.offsetTop,
-            left: el.offsetLeft,
-            width: el.offsetWidth,
-            height: el.offsetHeight,
-        };
-    };
-
-    let arrowsRafPending = false;
-    const requestUpdateArrowsRect = () => {
-        if (arrowsRafPending) return;
-        arrowsRafPending = true;
-        requestAnimationFrame(() => {
-            arrowsRafPending = false;
-            updateArrowsRect();
-        });
-    };
-
-    let scrollElResizeObserver;
-    const observeScrollEl = (el) => {
-        scrollElResizeObserver?.disconnect();
-        if (!el || typeof ResizeObserver === 'undefined') return;
-        scrollElResizeObserver = new ResizeObserver(requestUpdateArrowsRect);
-        scrollElResizeObserver.observe(el);
-    };
-
-    watch(scrollEl, (el) => {
-        updateArrowsRect();
-        observeScrollEl(el);
-    }, { immediate: true });
-
     let revertAnimations;
     onMounted(() => {
-        const el = scrollEl.value;
+        const el = getScrollEl();
         if (el) {
             nextTick(() => {
                 revertAnimations = useAnimations(el, blok, blok.animations, undefined, () => booted.value = true);
@@ -108,12 +59,25 @@
         } else {
             booted.value = true;
         }
-        window.addEventListener('resize', requestUpdateArrowsRect);
+        if(blok.id == "page-head-root"){
+            const $el = scrollRoot?.value;
+            const video = $el.querySelector('.SimpleVideo');
+            const videoElement = video?.querySelector('video');
+            if(videoElement && video ){
+                const pageHead = document.querySelector('#page-head');
+                const casanova = document.querySelector('#page-head-casanova');
+                const copy = document.querySelectorAll('#page-head-copy *');
+                const tl = gsap.timeline();
+                tl.fromTo(casanova, { y:40, opacity: 0 }, { y:0, opacity: 1, duration: 1 });
+                tl.fromTo(copy, { y:40, opacity: 0 }, { y:0, opacity: 1, duration: 1,onComplete: () => { videoElement.play();} }, "-=.5");
+                tl.to(video, { opacity: 1, duration: 1 });
+                tl.to(videoElement, { scale: 1, duration: 1 }, "-=1");
+                tl.fromTo(pageHead, { color: '#000000' }, { color: '#ffffff', duration: 1 }, "-=1");
+            }
+        }
     });
     onUnmounted(() => {
         revertAnimations?.();
-        scrollElResizeObserver?.disconnect();
-        window.removeEventListener('resize', requestUpdateArrowsRect);
     });
 </script>
 <style lang="scss">
@@ -141,11 +105,6 @@
     text-decoration: none;
     &:has(>.sticky){
         align-items: flex-start;
-    }
-    @include media(980){
-        &:not(.no-980-column):not(.horizontalScroll){
-            flex-direction: column;
-        }
     }
     &.flex-wrap{
         flex-wrap: wrap;
@@ -185,6 +144,9 @@
         align-items: flex-start;
         position: relative;
         z-index: 1;
+        @include media(550){
+            padding-bottom: mw(3) !important;
+        }
         &::-webkit-scrollbar{
             display: none;
         }
@@ -195,82 +157,100 @@
             }
         }
     }
-    &__scrollbar{
-        position: absolute;
-        left:0;
-        right:0;
-        bottom:0rem;
-        height: 1px;
-        border-radius: 2px;
-        background-color: rgba($greyLight, 0.3);
-        cursor: pointer;
-        z-index: 2;
-    }
-    &__scrollbar-thumb{
-        position: absolute;
-        top: 0;
-        height: .6rem;
-        min-width: 24px;
-        border-radius: 9rem;
-        background-color: color.adjust($greyLight, $lightness: 10%);
-        transform: translateY(-50%);
-        transition: height 0.2s ease;
-        cursor: grab;
-        &:active{
-            cursor: grabbing;
+        &__scrollbar{
+            position: absolute;
+            left:0;
+            right:0;
+            bottom:0rem;
+            height: 1px;
+            border-radius: 2px;
+            background-color: rgba($greyLight, 0.3);
+            cursor: pointer;
+            z-index: 2;
         }
-        &:hover{
-            height: 2rem;
+        &__scrollbar-thumb{
+            position: absolute;
+            top: 0;
+            height: .6rem;
+            min-width: 24px;
+            border-radius: 9rem;
+            background-color: color.adjust($greyLight, $lightness: 10%);
+            transform: translateY(-50%);
+            transition: height 0.2s ease;
+            cursor: grab;
+            &:active{
+                cursor: grabbing;
+            }
+            &:hover{
+                height: 2rem;
+            }
         }
-    }
-    &__arrows{
-        position: absolute;
-        display: flex;
-        justify-content: space-between;
-        pointer-events: none;
-        z-index: 3;
-        overflow: visible;
-    }
-    &__arrow--left,
-    &__arrow--right{
-        cursor: pointer;
-        pointer-events: all;
-        width: max(mw(2), 2rem);
-        height: max(mw(2), 2rem);
-        background: #000000af;
-        backdrop-filter: blur(4px);
-        position: sticky;
-        top: mw(8);
-        margin-top: mw(6);
-        margin-bottom: mw(4);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background-color $dt $de, opacity $dt $de;
-        &.is-disabled{
-            opacity: .1;
+        &__arrows{
+            position: absolute;
+            display: flex;
+            justify-content: space-between;
             pointer-events: none;
+            z-index: 3;
+            overflow: visible;
+            @include media(550){
+                display: none;
+            }
         }
-        .iconify{
-            font-size: max( mw(1), 1rem);
-            color:$white;
+        &__arrow--left,
+        &__arrow--right{
+            cursor: pointer;
+            pointer-events: all;
+            width: max(mw(2), 2rem);
+            height: max(mw(2), 2rem);
+            background: #000000af;
+            backdrop-filter: blur(4px);
+            position: sticky;
+            top: mw(8);
+            margin-top: mw(6);
+            margin-bottom: mw(4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color $dt $de, opacity $dt $de;
+            @include media(1440){
+                width: max(mw(3), 3rem);
+                height: max(mw(3), 3rem);
+            }
+            @include media(1024){
+                width: max(mw(4), 4rem);
+                height: max(mw(4), 4rem);
+            }
+            @include media(900){
+                width: max(mw(5), 5rem);
+                height: max(mw(5), 5rem);
+            }
+            &.is-disabled{
+                opacity: .1;
+                pointer-events: none;
+            }
+            .iconify{
+                font-size: max( mw(1), 1rem);
+                color:$white;
+                @include media(900){
+                    font-size: max( mw(2), 2rem);
+                }
+            }
+            &:hover{
+                background: #000000;
+            }
         }
-        &:hover{
-            background: #000000;
+        &__arrow--left{
+            margin-left: mw(-1);
+            .iconify{
+                transform: rotate(90deg);
+            }
         }
-    }
-    &__arrow--left{
-        margin-left: mw(-1);
-        .iconify{
-            transform: rotate(90deg);
+        &__arrow--right{
+            margin-right: mw(-1);
+            .iconify{
+                transform: rotate(-90deg);
+            }
         }
-    }
-    &__arrow--right{
-        margin-right: mw(-1);
-        .iconify{
-            transform: rotate(-90deg);
-        }
-    }
     &.marqueeImagesHolder{
         position: relative;
         background:$white;

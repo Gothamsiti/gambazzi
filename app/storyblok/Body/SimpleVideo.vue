@@ -1,16 +1,25 @@
 <template lang="pug">
-.SimpleVideo
-	video(ref="$video" :src="shouldLoad ? videoSrc : undefined" :poster="shouldLoad ? posterSrc : undefined" :title="videoTitle" :class="mw.classes" :style="mw.style" :autoplay="autoplay" :muted="muted" :loop="loop" playsinline webkit-playsinline preload="none")
+.SimpleVideo(:id="blok.id || undefined" :class="mw.classes" :style="mw.style")
+	video(ref="$video" :fetchpriority="blok.fetchPriorityHight ? 'high' : 'low'" :src="shouldLoad ? videoSrc : undefined" :poster="shouldLoad ? posterSrc : undefined" :title="videoTitle" :autoplay="autoplay" :muted="muted" :loop="loop" playsinline webkit-playsinline preload="none")
 </template>
 <script setup>
 	const {blok} = defineProps(["blok"]);
 	const mw = useMwClass(() => blok.class);
 
 	const toAssetUrl = (filename) => filename ? filename.replace('https://a.storyblok.com', '/storyblokasset') : undefined;
+	const toWebpAssetUrl = (filename) => {
+		const assetUrl = toAssetUrl(filename);
+		return assetUrl && !filename.split('?')[0].toLowerCase().endsWith('.svg')
+			? `${assetUrl}/m/filters:format(webp)`
+			: assetUrl;
+	};
 	// const toAssetUrl = (filename) => filename ? filename : undefined;
 
-	const videoSrc = computed(() => blok.proxyAsset ? toAssetUrl(blok.asset?.filename) : blok.asset?.filename);
-	const posterSrc = computed(() => toAssetUrl(blok.poster?.filename));
+	// i video Storyblok passano da /videoasset, che li copia su R2 al primo accesso e poi li serve da lì
+	const toVideoUrl = (filename) => filename ? filename.replace('https://a.storyblok.com', '/videoasset') : undefined;
+
+	const videoSrc = computed(() => toVideoUrl(blok.asset?.filename));
+	const posterSrc = computed(() => toWebpAssetUrl(blok.poster?.filename));
 	const videoTitle = computed(() => blok.asset?.title || undefined);
 
 	const autoplay = computed(() => blok.autoplay !== false);

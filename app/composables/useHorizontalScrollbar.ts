@@ -38,6 +38,17 @@ export function useHorizontalScrollbar({ scrollRoot, trackRef, enabled }: UseHor
         return root.$el ?? null;
     };
 
+    // box del contenitore rispetto al suo offsetParent: serve a sovrapporgli le frecce
+    const overlayRect = ref({ top: 0, left: 0, width: 0, height: 0 });
+    const arrowsStyle = computed(() => ({
+        top: overlayRect.value.top + 'px',
+        left: overlayRect.value.left + 'px',
+        width: overlayRect.value.width + 'px',
+        height: overlayRect.value.height + 'px',
+    }));
+    // il box cambia solo con resize e cambi di layout, non con lo scroll: si rilegge solo quando serve
+    let rectDirty = true;
+
     let rafPending = false;
     const updateThumb = (): void => {
         rafPending = false;
@@ -58,6 +69,10 @@ export function useHorizontalScrollbar({ scrollRoot, trackRef, enabled }: UseHor
         }
 
         showScrollbar.value = true;
+        if (rectDirty) {
+            rectDirty = false;
+            overlayRect.value = { top: el.offsetTop, left: el.offsetLeft, width: el.offsetWidth, height: el.offsetHeight };
+        }
         const width = (clientWidth / scrollWidth) * 100;
         const maxLeft = 100 - width;
         const left = (scrollLeft / (scrollWidth - clientWidth)) * maxLeft;
@@ -186,41 +201,53 @@ export function useHorizontalScrollbar({ scrollRoot, trackRef, enabled }: UseHor
     const onScroll = (): void => {
         if (!dragging) requestUpdateThumb();
     };
+    const onLayoutChange = (): void => {
+        rectDirty = true;
+        requestUpdateThumb();
+    };
 
-    onMounted(() => {
-        const el = getScrollEl();
+    let boundEl: HTMLElement | null = null;
+    const unbind = (): void => {
+        if (!boundEl) return;
+        boundEl.removeEventListener('scroll', onScroll);
+        boundEl.removeEventListener('load', onLayoutChange, true);
+        resizeObserver?.disconnect();
+        boundEl = null;
+    };
+    const bind = (el: HTMLElement | null): void => {
+        if (el === boundEl) return;
+        unbind();
         if (!el) return;
-
-        updateThumb();
-        
-
+        boundEl = el;
         el.addEventListener('scroll', onScroll, { passive: true });
-        el.addEventListener('load', requestUpdateThumb, true);
-        window.addEventListener('resize', requestUpdateThumb);
-
+        el.addEventListener('load', onLayoutChange, true);
         if (window.ResizeObserver) {
-            resizeObserver = new ResizeObserver(requestUpdateThumb);
+            resizeObserver ??= new ResizeObserver(onLayoutChange);
             resizeObserver.observe(el);
         }
+        rectDirty = true;
+        updateThumb();
+    };
+
+    onMounted(() => {
+        bind(getScrollEl());
+        window.addEventListener('resize', onLayoutChange);
+        // il contenitore può cambiare elemento dopo il mount (es. BodyCols passa da NuxtLink a section con l'editor)
+        watch(getScrollEl, bind, { flush: 'post' });
     });
 
     onBeforeUnmount(() => {
-        const el = getScrollEl();
-        if (el) {
-            el.removeEventListener('scroll', onScroll);
-            el.removeEventListener('load', requestUpdateThumb, true);
-        }
-
-        window.removeEventListener('resize', requestUpdateThumb);
+        unbind();
+        window.removeEventListener('resize', onLayoutChange);
         window.removeEventListener('pointermove', onPointerMove);
         window.removeEventListener('pointerup', onPointerUp);
         if (dragRafId !== undefined) cancelAnimationFrame(dragRafId);
-        resizeObserver?.disconnect();
     });
 
     return {
         showScrollbar,
         thumbStyle,
+        arrowsStyle,
         onThumbPointerDown,
         onTrackPointerDown,
         onTrackClick,

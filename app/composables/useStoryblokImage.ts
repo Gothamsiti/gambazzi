@@ -71,6 +71,35 @@ const candidateWidths = (naturalWidth: number | null): number[] => {
     return widths;
 };
 
+/** In SSR non conosciamo la viewport: gli sfondi CSS si limitano a questa larghezza. */
+const BACKGROUND_MAX_WIDTH = 1920;
+
+export interface StoryblokBackgroundOptions {
+    /** `false` lascia il formato originale. */
+    webp?: boolean;
+    quality?: number | string;
+}
+
+/**
+ * URL per uno sfondo CSS: passa dal proxy, clampato a BACKGROUND_MAX_WIDTH senza upscale,
+ * in WebP salvo `webp: false`. Le SVG restano intatte.
+ */
+export const storyblokBackgroundUrl = (
+    filename?: string | null,
+    { webp = true, quality }: StoryblokBackgroundOptions = {},
+): string | null => {
+    const info = parseStoryblokImage(filename);
+    if (!info) return null;
+    if (info.isSvg) return info.base.replace(CDN_HOST, ASSET_PROXY);
+
+    const width = Math.min(info.naturalWidth ?? BACKGROUND_MAX_WIDTH, BACKGROUND_MAX_WIDTH);
+    const filters: string[] = [];
+    if (webp) filters.push('format(webp)');
+    if (quality) filters.push(`quality(${quality})`);
+    const transform = filters.length ? `/filters:${filters.join(':')}` : '';
+    return `${info.base}/m/${width}x0${transform}`;
+};
+
 /**
  * Attributi pronti per il tag `<img>`: `src`, `srcset` con descrittori `w`, `sizes`
  * e le dimensioni intrinseche (che evitano il CLS).

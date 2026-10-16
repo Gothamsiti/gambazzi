@@ -13,7 +13,8 @@
     "@nuxt/icon": "^2.5.1",
     "@nuxt/image": "^2.1.0",
     "@storyblok/nuxt": "^11.2.1",
-    "cloudflare": "^7.1.0",
+    "aws4fetch": "^1.0.20",
+    "cloudflare": "^7.2.0",
     "embla-carousel": "^8.6.0",
     "embla-carousel-auto-scroll": "^8.6.0",
     "embla-carousel-wheel-gestures": "^8.1.0",
@@ -28,11 +29,11 @@
     "vue3-select-component": "^1.0.1"
   },
   "devDependencies": {
-    "@types/node": "^26.6.2",
+    "@types/node": "^26.6.3",
     "pug": "^3.0.4",
     "sass": "^1.105.0",
     "sass-loader": "^17.0.1",
-    "wrangler": "^4.137.0"
+    "wrangler": "^4.142.0"
   },
   "volta": {
     "node": "22.22.2"

@@ -94,6 +94,18 @@ function getSplitRoots(el: Element): Element[] {
     });
 }
 
+// ogni refresh ricalcola start/end di tutti gli ScrollTrigger della pagina e forza un layout:
+// le richieste dei componenti montati nello stesso ciclo confluiscono in un solo refresh al frame successivo
+let refreshQueued = false;
+export function scheduleScrollTriggerRefresh(): void {
+    if (refreshQueued) return;
+    refreshQueued = true;
+    requestAnimationFrame(() => {
+        refreshQueued = false;
+        ScrollTrigger.refresh();
+    });
+}
+
 export function useAnimations($el: HTMLElement, blok: any, animations: AnimationItem[] = [], animationsEndCallback?: () => void, animationsInitedCallback?: () => void): () => void {
     if (!animations.length) {
         animationsEndCallback?.();
@@ -105,6 +117,7 @@ export function useAnimations($el: HTMLElement, blok: any, animations: Animation
     let completedAnimations = 0;
     const totalAnimations = animations.length;
     let callbackCalled = false;
+    let hasScrollTrigger = false;
 
     const onAnimationComplete = (): void => {
         if (callbackCalled) {
@@ -130,6 +143,11 @@ export function useAnimations($el: HTMLElement, blok: any, animations: Animation
             // della split precedente: si divide una sola volta con tutti i tipi richiesti (es. "lines,words")
             // e ogni animazione prende la sua parte
             const splitAnimations = animations.filter((a) => isSplitType(a.type) && !isSkipped(a));
+            // getComputedStyle dopo le scritture della SplitText forza un ricalcolo degli stili: i figli reali
+            // si leggono una volta e si rileggono solo se la split ha cambiato il DOM
+            let realChildren: Element[] | undefined;
+            const getRealChildrenOnce = (): Element[] => (realChildren ??= getRealChildren($el));
+
             let splitted: SplitTextResult | undefined;
             const getSplitted = (): SplitTextResult => {
                 if (splitted) return splitted;
@@ -144,6 +162,7 @@ export function useAnimations($el: HTMLElement, blok: any, animations: Animation
                 if (types.includes('words')) splittingConfig.wordsClass = 'words';
                 if (types.includes('chars')) splittingConfig.charsClass = 'chars';
                 splitted = new SplitText(getSplitRoots($el), splittingConfig) as SplitTextResult;
+                realChildren = undefined;
                 return splitted;
             };
 
@@ -156,12 +175,13 @@ export function useAnimations($el: HTMLElement, blok: any, animations: Animation
                 const simpleText = type == 'image' ? $el.querySelectorAll('img') : $el.children;
                 const config: GsapConfig = {};
                 if (scrollTrigger) {
+                    hasScrollTrigger = true;
                     // triggerOverride: id di un altro elemento da usare come trigger dello scroll
                     const overrideTrigger = triggerOverride ? document.getElementById(triggerOverride.replace(/^#/, '')) : null;
                     // un wrapper in display: contents non ha box (getBoundingClientRect vuoto): come trigger
                     // si usano i figli reali, altrimenti ScrollTrigger calcola start/end sbagliati
                     config.scrollTrigger = {
-                        trigger: overrideTrigger ?? (type == 'image' ? simpleText : getRealChildren($el)),
+                        trigger: overrideTrigger ?? (type == 'image' ? simpleText : getRealChildrenOnce()),
                         start,
                         end,
                         scrub,
@@ -190,14 +210,14 @@ export function useAnimations($el: HTMLElement, blok: any, animations: Animation
                 }
                 const target: gsap.TweenTarget = isSplitType(type)
                     ? (getSplitted()[type] ?? simpleText)
-                    : type === 'childs' ? getRealChildren($el) : simpleText;
+                    : type === 'childs' ? getRealChildrenOnce() : simpleText;
                 gsap.fromTo(target, from, { ...to, ...config, onComplete: onAnimationComplete } as gsap.TweenVars);
             }
     }, $el);
 
     let ctx: gsap.Context | undefined;
     ctx = buildAnimations();
-    ScrollTrigger.refresh();
+    if (hasScrollTrigger) scheduleScrollTriggerRefresh();
 
     return () => {
         ctx?.revert();

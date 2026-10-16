@@ -43,6 +43,13 @@ export default defineNuxtConfig({
     },
     framesDomain: process.env.FRAMES_DOMAIN,
     cachePurgeToken: process.env.CACHE_PURGE_TOKEN,
+    storyblokSpaceId: process.env.STORYBLOK_SPACE_ID,
+    r2: {
+      accessKey: process.env.R2_ACCESS_KEY,
+      secretKey: process.env.R2_SECRET_KEY,
+      bucket: process.env.R2_BUCKET,
+      endpoint: process.env.R2_ENDPOINT,
+    },
     nginx: {
       cacheDir: process.env.NGINX_CACHE_DIR,
       purgeCommand: process.env.NGINX_PURGE_COMMAND,
@@ -51,6 +58,7 @@ export default defineNuxtConfig({
       env: process.env.ENVIROMENT,
       framesDomain: process.env.FRAMES_DOMAIN,
       framesUseLocal: process.env.FRAMES_USE_LOCAL === 'true',
+      normalizeScroll: process.env.NORMALIZE_SCROLL ? process.env.NORMALIZE_SCROLL === 'true' : false,
     }
   },
   basicAuth: {

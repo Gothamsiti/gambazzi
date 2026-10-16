@@ -34,7 +34,7 @@ section.BodySimpleText(ref="$el" :class="mw.classes" :style="bgStyle" :id="blok.
 	const bgStyle = computed(() => ({
 		backgroundColor: blok.backgroundColor,
 		color: blok.color,
-		backgroundImage: blok.backgroundImage?.filename ? `url(${blok.backgroundImage.filename})` : 'none',
+		backgroundImage: blok.backgroundImage?.filename ? `url('${storyblokBackgroundUrl(blok.backgroundImage.filename)}')` : 'none',
 		borderColor: blok.borderColor,
 		...mw.style,
 		...initialOpacity.value,
@@ -103,6 +103,7 @@ section.BodySimpleText(ref="$el" :class="mw.classes" :style="bgStyle" :id="blok.
 		padding:mw(1);
 		height: mw(35);
 		flex-direction: column;
+		color: $white;
 		img{
 			height: mw(19);
 			object-fit: cover;
@@ -118,10 +119,47 @@ section.BodySimpleText(ref="$el" :class="mw.classes" :style="bgStyle" :id="blok.
 				padding-top: mw(1);
 			}
 		}
-		 color: $white;
 		&:nth-child(1){ background-color: $greyDark; }
 		&:nth-child(2){ background-color: color.adjust($greyDark, $lightness: 20%); width:mw(20); flex:0 0 mw(20);	}
 		&:nth-child(3){ background-color: color.adjust($greyDark, $lightness: 20%); width:mw(20); flex:0 0 mw(20); }
+		@include media(1250){
+			&:nth-child(2),&:nth-child(3){ width:mw(25); flex:0 0 mw(25); }
+		}
+		@include media(980){
+			height: mw(45);
+			>*{
+				min-width: 100%;
+				&:first-child{
+					height: mw(20);
+					flex: 0 0 mw(20);
+				}
+			}
+			img{
+				height: mw(20);
+			}
+		}
+		@include media(900){
+			flex: 1 !important;
+			width: 100% !important;
+			height: auto !important;
+			padding: mw(8) mw(1);
+			>*{
+				height: auto !important;
+				&:first-child{
+					height: mw(60) !important;
+					flex: 0 0 mw(60) !important;
+					background:$white;
+				}
+				img{
+					width: 100% !important;
+					height: 100% !important;
+					object-fit: contain;
+				}
+			}
+		}
+		@include media(660){
+			padding: mw(2) mw(2) mw(10) mw(2);
+		}
 	}
 	&.align-items-center{
 		align-items: center;

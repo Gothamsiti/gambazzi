@@ -52,26 +52,71 @@ html,body{
         font-family: $font-serif;
 		font-size: 8.1rem;
 		line-height: 1.05em;
+		@include media(1024){
+			font-size: 7rem;
+		}
+		@include media(768){
+			font-size: 6rem;
+		}
+		@include media(550){
+			font-size: 5rem;
+		}
+		@include media(480){
+			font-size: 3.6rem;
+		}
     }
 	h2,.h2{
 		font-size: 8rem;
 		line-height: 1em;
+		@include media(768){
+			font-size: 5rem;
+		}
+		@include media(550){
+			font-size: 4rem;
+		}
+		@include media(480){
+			font-size: 3.4rem;
+		}
     }
 	h3,.h3{
 		font-size: 4rem;
 		line-height: 1em;
+		@include media(768){
+			font-size: 3rem;
+		}
+		@include media(550){
+			font-size: 2.5rem;
+		}
+		@include media(480){
+			font-size: 2.4rem;
+		}
     }
 	h4,.h4{
 		font-size: 3rem;
 		line-height: auto;
+		@include media(768){
+			font-size: 2.5rem;
+		}
+		@include media(550){
+			font-size: 2rem;
+		}
     }
 	h5,.h5{
 		font-size: 2.4rem;
 		line-height: auto;
+		@include media(768){
+			font-size: 2rem;
+		}
+		@include media(550){
+			font-size: 1.8rem;
+		}
     }
 	p,.p{
 		font-size: 1.6rem;
 		line-height: auto;
+		@include media(768){
+			font-size: 1.4rem;
+		}
 	}
 	.hidemobile{
 		@include media(500){
@@ -83,25 +128,6 @@ html,body{
 			display: none !important;
 		}
 	}
-    .has-padding{ padding: mw(var(--p)) !important; }
-    .has-padding-t{ padding-top: mw(var(--p-t)) !important; }
-    .has-padding-r{ padding-right: mw(var(--p-r)) !important; }
-    .has-padding-b{ padding-bottom: mw(var(--p-b)) !important; }
-    .has-padding-l{ padding-left: mw(var(--p-l)) !important; }
-    .has-padding-x{ padding-inline: mw(var(--p-x)) !important; }
-    .has-padding-y{ padding-block: mw(var(--p-y)) !important; }
-    .has-margin{ margin: mw(var(--m)) !important; }
-    .has-margin-t{ margin-top: mw(var(--m-t)) !important; }
-    .has-margin-r{ margin-right: mw(var(--m-r)) !important; }
-    .has-margin-b{ margin-bottom: mw(var(--m-b)) !important; }
-    .has-margin-l{ margin-left: mw(var(--m-l)) !important; }
-    .has-margin-x{ margin-inline: mw(var(--m-x)) !important; }
-    .has-margin-y{ margin-block: mw(var(--m-y)) !important; }
-    .has-width{ width: mw(var(--w)) !important; }
-    .has-max-width{ max-width: calc(var(--max-width) * 1px) !important; }
-    .has-height{ height: mw(var(--h)) !important; }
-    .has-flex{ flex:0 0 mw(var(--flex)) !important; }
-    .has-gap{ gap: mw(var(--gap)) !important; }
     .flex-grown{ flex:1 !important; }
 
 
@@ -158,4 +184,26 @@ html,body{
     .top-9{ top: mw(9); }
     .top-10{ top: mw(10); }
 }
+
+// fuori da html,body: stessa specificità (0,1,0) delle classi "has-<breakpoint>-*" iniettate da useMwClass, altrimenti l'override responsive perde il tie-break
+.has-padding{ padding: mw(var(--p)) !important; }
+.has-padding-t{ padding-top: mw(var(--p-t)) !important; }
+.has-padding-r{ padding-right: mw(var(--p-r)) !important; }
+.has-padding-b{ padding-bottom: mw(var(--p-b)) !important; }
+.has-padding-l{ padding-left: mw(var(--p-l)) !important; }
+.has-padding-x{ padding-inline: mw(var(--p-x)) !important; }
+.has-padding-y{ padding-block: mw(var(--p-y)) !important; }
+.has-margin{ margin: mw(var(--m)) !important; }
+.has-margin-t{ margin-top: mw(var(--m-t)) !important; }
+.has-margin-r{ margin-right: mw(var(--m-r)) !important; }
+.has-margin-b{ margin-bottom: mw(var(--m-b)) !important; }
+.has-margin-l{ margin-left: mw(var(--m-l)) !important; }
+.has-margin-x{ margin-inline: mw(var(--m-x)) !important; }
+.has-margin-y{ margin-block: mw(var(--m-y)) !important; }
+.has-width{ width: mw(var(--w)) !important; }
+.has-max-width{ max-width: calc(var(--max-width) * 1px) !important; }
+.has-height{ height: mw(var(--h)) !important; }
+.has-flex{ flex:0 0 mw(var(--flex)) !important; }
+.has-top{ top: mw(var(--top)) !important; }
+.has-gap{ gap: mw(var(--gap)) !important; }
 

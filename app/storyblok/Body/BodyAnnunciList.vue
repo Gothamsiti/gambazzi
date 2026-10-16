@@ -15,7 +15,7 @@
         undefined,
         options
     )
-    const annunci = computed(() => stories?.value?.map(story => {return {...story,component:'BodyAnnunciListItem'}}));
+    const annunci = computed(() => stories?.value?.map(story => ({...story, component:'BodyAnnunciListItem'})));
 </script>
 <style lang="scss">
 .BodyAnnunciList{

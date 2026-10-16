@@ -51,5 +51,10 @@ header#mainHeader{
             }
         }
     }
+    @include media(1024){
+        .center{
+            display: none !important;
+        }
+    }
 }
 </style>

@@ -7,6 +7,7 @@
             arrows
             dots
             loop
+            :watch-drag="canDragGallery"
             prev-icon="gotham:circle-arrow-right"
             next-icon="gotham:circle-arrow-right"
             :prev="{ 'aria-label': $__('annunciGalleryPrev') }"
@@ -14,7 +15,7 @@
         )
             imageItem(
                 :blok="item"
-                :priority="index === 0"
+                :priority="blok.priority && index === 0"
                 sizes="(max-width: 768px) 100vw, 50vw"
             )
     .card
@@ -53,8 +54,10 @@
 <script setup>
     const {blok} = defineProps(["blok"]);
     const { $__ } = useNuxtApp();
+    const { sizes } = useSizes();
 
     const content = computed(() => blok?.content || {});
+    const canDragGallery = () => sizes.value.width > 500;
 
     // piano numerico -> "1°", piano terra ("T") lasciato invariato
     const floor = computed(() => /^\d+$/.test(content.value.floor) ? `${content.value.floor}°` : content.value.floor);
@@ -121,6 +124,22 @@
     flex-direction: column;
     gap: mw(1);
     align-self: stretch;
+    @include media(1250){
+        width: mw(40);
+        flex: 0 0 mw(40);
+    }
+    @include media(980){
+        width: mw(50);
+        flex: 0 0 mw(50);
+    }
+    @include media(980){
+        width: mw(60);
+        flex: 0 0 mw(60);
+    }
+    @include media(980){
+        width: mw(66);
+        flex: 0 0 mw(66);
+    }
     >.gallery{
         [data-slot="root"]{
             position: relative;
@@ -169,8 +188,12 @@
             font-size: 4.8rem;
             cursor: pointer;
             transition: opacity $dt $de;
+
             > *{
                 font-size: mw(2);
+                @include media(660){
+                    font-size: mw(4);
+                }
             }
             &:disabled{
                 opacity: .3;
@@ -224,6 +247,9 @@
         gap:mw(3);
         flex:1;
         box-sizing: border-box;
+        @include media(980){
+            padding: mw(3);
+        }
         >.head{
             display: grid;
             grid-template-columns: auto auto;
@@ -249,17 +275,30 @@
             }
             >.price{
                 justify-self: end;
+                @include media(980){
+                    justify-self: start;
+                }
+            }
+            @include media(980){
+                grid-template-columns: auto;
+                gap: mw(2);
             }
         }
         >.body{
             display: flex;
             flex-direction: column;
             gap: mw(1);
+            @include media(660){
+                gap: mw(4);
+            }
             *{
                 font-size: 1.6rem;
             }
             >.tour{
                 align-self: flex-end;
+                @include media(660){
+                    align-self: flex-start;
+                }
             }
         }
         >.properties{

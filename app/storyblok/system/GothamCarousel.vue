@@ -47,6 +47,7 @@
         arrows: { type: Boolean, default: false },
         dots: { type: Boolean, default: false },
         dragFree: { type: Boolean, default: false },
+        watchDrag: { type: [Boolean, Function], default: true },
         wheelGestures: { type: Boolean, default: false },
         autoScroll: { type: [Object, Boolean], default: false },
         align: { type: String, default: 'start' },
@@ -106,7 +107,12 @@
         if (!viewport.value) return;
         embla = EmblaCarousel(
             viewport.value,
-            { loop: props.loop, dragFree: props.dragFree, align: props.align },
+            {
+                loop: props.loop,
+                dragFree: props.dragFree,
+                watchDrag: props.watchDrag,
+                align: props.align,
+            },
             plugins,
         );
         embla.on('select', sync).on('reInit', sync);
