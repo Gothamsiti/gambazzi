@@ -15,6 +15,5 @@
     width: 100%;
     box-sizing: border-box;
     z-index: 1;
-    gap: mw(1);
 }
 </style>

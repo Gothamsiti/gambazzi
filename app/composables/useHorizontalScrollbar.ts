@@ -6,22 +6,26 @@ type ScrollRootRefValue =
       }
     | null;
 
-type MaybeEnabled = Ref<boolean> | ComputedRef<boolean> | boolean | undefined;
+type MaybeBoolean = Ref<boolean> | ComputedRef<boolean> | boolean | undefined;
 
 interface UseHorizontalScrollbarOptions {
     scrollRoot: Ref<ScrollRootRefValue>;
-    trackRef: Ref<HTMLElement | null>;
-    enabled?: MaybeEnabled;
+    trackRef?: Ref<HTMLElement | null>;
+    enabled?: MaybeBoolean;
+    // true: navigazione con le frecce, false: scrollbar custom
+    arrows?: MaybeBoolean;
 }
 
-function resolveEnabled(enabled: MaybeEnabled): boolean {
-    if (typeof enabled === 'boolean') return enabled;
-    return enabled?.value ?? true;
+function resolveBoolean(value: MaybeBoolean, fallback: boolean): boolean {
+    if (typeof value === 'boolean') return value;
+    return value?.value ?? fallback;
 }
 
-export function useHorizontalScrollbar({ scrollRoot, trackRef, enabled }: UseHorizontalScrollbarOptions) {
-    const {sizes,scroll} = useSizes();
-    const showScrollbar = ref(false);
+export function useHorizontalScrollbar({ scrollRoot, trackRef, enabled, arrows }: UseHorizontalScrollbarOptions) {
+    const scrollable = ref(false);
+    const useArrows = computed(() => resolveBoolean(arrows, false));
+    const showScrollbar = computed(() => scrollable.value && !useArrows.value);
+    const showArrows = computed(() => scrollable.value && useArrows.value);
     const thumb = ref({ width: 100, left: 0 });
     const canScrollLeft = ref(false);
     const canScrollRight = ref(false);
@@ -38,40 +42,32 @@ export function useHorizontalScrollbar({ scrollRoot, trackRef, enabled }: UseHor
         return root.$el ?? null;
     };
 
-    // box del contenitore rispetto al suo offsetParent: serve a sovrapporgli le frecce
-    const overlayRect = ref({ top: 0, left: 0, width: 0, height: 0 });
+    // box del contenitore rispetto al suo offsetParent: serve ad allineargli le frecce sopra
+    const overlayRect = ref({ top: 0, left: 0, width: 0 });
     const arrowsStyle = computed(() => ({
         top: overlayRect.value.top + 'px',
         left: overlayRect.value.left + 'px',
         width: overlayRect.value.width + 'px',
-        height: overlayRect.value.height + 'px',
     }));
     // il box cambia solo con resize e cambi di layout, non con lo scroll: si rilegge solo quando serve
     let rectDirty = true;
 
     let rafPending = false;
-    const updateThumb = (): void => {
+    const update = (): void => {
         rafPending = false;
         const el = getScrollEl();
-        if (!el || !resolveEnabled(enabled)) {
-            showScrollbar.value = false;
+        const { scrollWidth = 0, clientWidth = 0, scrollLeft = 0 } = el ?? {};
+        if (!el || !resolveBoolean(enabled, true) || scrollWidth <= clientWidth + 1) {
+            scrollable.value = false;
             canScrollLeft.value = false;
             canScrollRight.value = false;
             return;
         }
 
-        const { scrollWidth, clientWidth, scrollLeft } = el;
-        if (scrollWidth <= clientWidth + 1) {
-            showScrollbar.value = false;
-            canScrollLeft.value = false;
-            canScrollRight.value = false;
-            return;
-        }
-
-        showScrollbar.value = true;
+        scrollable.value = true;
         if (rectDirty) {
             rectDirty = false;
-            overlayRect.value = { top: el.offsetTop, left: el.offsetLeft, width: el.offsetWidth, height: el.offsetHeight };
+            overlayRect.value = { top: el.offsetTop, left: el.offsetLeft, width: el.offsetWidth };
         }
         const width = (clientWidth / scrollWidth) * 100;
         const maxLeft = 100 - width;
@@ -84,10 +80,10 @@ export function useHorizontalScrollbar({ scrollRoot, trackRef, enabled }: UseHor
         canScrollRight.value = scrollLeft < maxScroll - epsilon;
     };
 
-    const requestUpdateThumb = (): void => {
+    const requestUpdate = (): void => {
         if (rafPending) return;
         rafPending = true;
-        requestAnimationFrame(updateThumb);
+        requestAnimationFrame(update);
     };
 
     let dragging = false;
@@ -105,7 +101,7 @@ export function useHorizontalScrollbar({ scrollRoot, trackRef, enabled }: UseHor
         if (!el) return;
 
         el.scrollLeft = dragStartScrollLeft + (pendingPointerX - dragStartX) * dragScrollRatio;
-        updateThumb();
+        update();
     };
 
     const onPointerMove = (e: PointerEvent): void => {
@@ -123,7 +119,7 @@ export function useHorizontalScrollbar({ scrollRoot, trackRef, enabled }: UseHor
             cancelAnimationFrame(dragRafId);
             dragRafId = undefined;
         }
-        requestUpdateThumb();
+        requestUpdate();
         window.removeEventListener('pointermove', onPointerMove);
         window.removeEventListener('pointerup', onPointerUp);
     };
@@ -135,7 +131,7 @@ export function useHorizontalScrollbar({ scrollRoot, trackRef, enabled }: UseHor
         const el = getScrollEl();
         if (!el) return;
 
-        const track = trackRef.value;
+        const track = trackRef?.value;
         if (!track) return;
 
         const scrollableWidth = el.scrollWidth - el.clientWidth;
@@ -160,7 +156,7 @@ export function useHorizontalScrollbar({ scrollRoot, trackRef, enabled }: UseHor
         e.stopPropagation();
 
         const el = getScrollEl();
-        const track = trackRef.value;
+        const track = trackRef?.value;
         if (!el || !track) return;
 
         const rect = track.getBoundingClientRect();
@@ -168,42 +164,50 @@ export function useHorizontalScrollbar({ scrollRoot, trackRef, enabled }: UseHor
         el.scrollLeft = clickRatio * el.scrollWidth - el.clientWidth / 2;
     };
 
+    // figli "reali" del contenitore: i wrapper con display: contents (es. .BodyColsWrap) non hanno un box,
+    // quindi si scende ai loro figli
+    const getItems = (parent: Element): HTMLElement[] =>
+        (Array.from(parent.children) as HTMLElement[]).flatMap((child) =>
+            getComputedStyle(child).display === 'contents' ? getItems(child) : [child]
+        );
+
     const moveScroll = (direction: number): void => {
         const el = getScrollEl();
         if (!el) return;
         const maxScroll = el.scrollWidth - el.clientWidth;
         if (maxScroll <= 0) return;
 
-        let children = Array.from(el.children) as HTMLElement[];
+        let children = getItems(el);
         const onlyChild = children.length === 1 ? children[0] : undefined;
         if (onlyChild && onlyChild.children.length) {
-            children = Array.from(onlyChild.children) as HTMLElement[];
+            children = getItems(onlyChild);
         }
-        if (!children.length) return;
 
         const containerRect = el.getBoundingClientRect();
         const epsilon = 1;
+        // senza un elemento a cui agganciarsi si scorre di una larghezza del contenitore
+        const fallback = el.clientWidth * Math.sign(direction);
 
         if (direction > 0) {
             if (el.scrollLeft >= maxScroll - epsilon) return;
             const target = children.find((child) => child.getBoundingClientRect().right > containerRect.right + epsilon);
-            if (!target) return;
-            el.scrollBy({ left: target.getBoundingClientRect().right - containerRect.right, behavior: 'smooth' });
+            const left = target ? target.getBoundingClientRect().right - containerRect.right : fallback;
+            el.scrollBy({ left, behavior: 'smooth' });
         } else if (direction < 0) {
             if (el.scrollLeft <= epsilon) return;
             const target = [...children].reverse().find((child) => child.getBoundingClientRect().left < containerRect.left - epsilon);
-            if (!target) return;
-            el.scrollBy({ left: target.getBoundingClientRect().left - containerRect.left, behavior: 'smooth' });
+            const left = target ? target.getBoundingClientRect().left - containerRect.left : fallback;
+            el.scrollBy({ left, behavior: 'smooth' });
         }
     };
 
     let resizeObserver: ResizeObserver | undefined;
     const onScroll = (): void => {
-        if (!dragging) requestUpdateThumb();
+        if (!dragging) requestUpdate();
     };
     const onLayoutChange = (): void => {
         rectDirty = true;
-        requestUpdateThumb();
+        requestUpdate();
     };
 
     let boundEl: HTMLElement | null = null;
@@ -226,7 +230,7 @@ export function useHorizontalScrollbar({ scrollRoot, trackRef, enabled }: UseHor
             resizeObserver.observe(el);
         }
         rectDirty = true;
-        updateThumb();
+        update();
     };
 
     onMounted(() => {
@@ -234,6 +238,8 @@ export function useHorizontalScrollbar({ scrollRoot, trackRef, enabled }: UseHor
         window.addEventListener('resize', onLayoutChange);
         // il contenitore può cambiare elemento dopo il mount (es. BodyCols passa da NuxtLink a section con l'editor)
         watch(getScrollEl, bind, { flush: 'post' });
+        // cambiando modalità cambia il layout attorno al contenitore: si riallinea il box delle frecce
+        watch(useArrows, onLayoutChange, { flush: 'post' });
     });
 
     onBeforeUnmount(() => {
@@ -246,12 +252,13 @@ export function useHorizontalScrollbar({ scrollRoot, trackRef, enabled }: UseHor
 
     return {
         showScrollbar,
+        showArrows,
         thumbStyle,
         arrowsStyle,
         onThumbPointerDown,
         onTrackPointerDown,
         onTrackClick,
-        requestUpdateThumb,
+        requestUpdate,
         getScrollEl,
         moveScroll,
         canScrollLeft,

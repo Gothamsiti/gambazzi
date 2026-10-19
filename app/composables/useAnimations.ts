@@ -166,6 +166,11 @@ export function useAnimations($el: HTMLElement, blok: any, animations: Animation
                 return splitted;
             };
 
+            // più animazioni sulla stessa proprietà dello stesso target (es. due fromTo con scrollTrigger):
+            // solo la prima deve scrivere subito i suoi valori, le successive con immediateRender sovrascriverebbero
+            // lo stato iniziale con il proprio "from" già al mount
+            const renderedProps = new Set<string>();
+
             for (const animation of animations) {
                 const { type, start, end, scrub, duration, markers, delay, properties, stagger, scrollTrigger, reverse, triggerOverride } = animation;
                 if (isSkipped(animation)) {
@@ -211,6 +216,13 @@ export function useAnimations($el: HTMLElement, blok: any, animations: Animation
                 const target: gsap.TweenTarget = isSplitType(type)
                     ? (getSplitted()[type] ?? simpleText)
                     : type === 'childs' ? getRealChildrenOnce() : simpleText;
+                const targetKey = isSplitType(type) || type === 'childs' || type === 'image' ? type : 'children';
+                const propKeys = (properties ?? []).map((prop) => `${targetKey}:${prop.key}`);
+                const alreadyRendered = propKeys.some((k) => renderedProps.has(k));
+                propKeys.forEach((k) => renderedProps.add(k));
+                if (alreadyRendered) {
+                    config.immediateRender = false;
+                }
                 gsap.fromTo(target, from, { ...to, ...config, onComplete: onAnimationComplete } as gsap.TweenVars);
             }
     }, $el);

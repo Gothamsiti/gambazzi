@@ -49,6 +49,8 @@ NuxtLink.BodyCTA(:to="$__url(blok.link?.cached_url+(blok.link?.cached_url?.inclu
 		flex-direction: column-reverse;
 		justify-content: space-between;
 		gap: mw(1);
+		width: mw(25);
+		max-width: 100%;
 		min-height: mw(5);
 		padding: mw(1);
 		box-sizing: border-box;
@@ -70,6 +72,12 @@ NuxtLink.BodyCTA(:to="$__url(blok.link?.cached_url+(blok.link?.cached_url?.inclu
 			.label{
 				display: none;
 			}
+		}
+		// variante bianca: box bianco con testo/icona neri
+		// (specificità maggiore della classe globale .white che forza il colore bianco)
+		&.white{
+			background: $white;
+			color: $black !important;
 		}
 	}
 	&.big{

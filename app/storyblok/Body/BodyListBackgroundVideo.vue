@@ -20,8 +20,7 @@
 .BodyListBackgroundVideo{
     position: relative;
     width: 100%;
-    // .background copre tutto il componente: il video sticky al suo interno
-    // si ferma quando si arriva in fondo al componente
+    padding-bottom: mw(20);
     .background{
         position: absolute;
         inset: 0;

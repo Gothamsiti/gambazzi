@@ -6,11 +6,11 @@
         BodyColsContent(:blok="blok" :noeditable="noeditable" @proceed="emit('proceed')")
     .BodyCols__scrollbar(v-if="isHorizontalScroll && showScrollbar" ref="trackRef" @click="onTrackClick" @pointerdown="onTrackPointerDown")
         .BodyCols__scrollbar-thumb(:style="thumbStyle" @pointerdown="onThumbPointerDown" @click.stop)
-    .BodyCols__arrows(v-if="isHorizontalScroll && showScrollbar" :style="arrowsStyle")
+    .BodyCols__arrows(v-if="isHorizontalScroll && showArrows" :style="arrowsStyle")
         .BodyCols__arrow--left(:class="{ 'is-disabled': !canScrollLeft }" @click="moveScroll(-1)")
-            Icon(:name="'gotham:arrow-down'")
+            Icon(:name="'gotham:arrow-right'")
         .BodyCols__arrow--right(:class="{ 'is-disabled': !canScrollRight }" @click="moveScroll(1)")
-            Icon(:name="'gotham:arrow-down'")
+            Icon(:name="'gotham:arrow-right'")
 </template>
 <script setup>
     import { gsap } from "gsap";
@@ -34,6 +34,7 @@
     const trackRef = ref(null);
     const {
         showScrollbar,
+        showArrows,
         thumbStyle,
         arrowsStyle,
         onThumbPointerDown,
@@ -47,6 +48,7 @@
         scrollRoot,
         trackRef,
         enabled: isHorizontalScroll,
+        arrows: true,
     });
 
     let revertAnimations;
@@ -140,12 +142,15 @@
         flex-wrap: nowrap;
         scrollbar-width: none;
         -ms-overflow-style: none;
-        padding-bottom: mw(1) !important;
         align-items: flex-start;
         position: relative;
         z-index: 1;
-        @include media(550){
-            padding-bottom: mw(3) !important;
+        // spazio per la scrollbar custom, solo quando c'è
+        &:has(~ .BodyCols__scrollbar){
+            padding-bottom: mw(1) !important;
+            @include media(550){
+                padding-bottom: mw(3) !important;
+            }
         }
         &::-webkit-scrollbar{
             display: none;
@@ -185,13 +190,16 @@
                 height: 2rem;
             }
         }
+        // frecce in alto a destra, appoggiate sopra il bordo superiore del contenitore
         &__arrows{
             position: absolute;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
+            gap: mw(.5);
+            padding-bottom: mw(1);
+            transform: translate(mw(-2), -100%);
             pointer-events: none;
             z-index: 3;
-            overflow: visible;
             @include media(550){
                 display: none;
             }
@@ -200,56 +208,28 @@
         &__arrow--right{
             cursor: pointer;
             pointer-events: all;
-            width: max(mw(2), 2rem);
-            height: max(mw(2), 2rem);
-            background: #000000af;
-            backdrop-filter: blur(4px);
-            position: sticky;
-            top: mw(8);
-            margin-top: mw(6);
-            margin-bottom: mw(4);
+            width: max(mw(4.5), 4.4rem);
+            height: max(mw(4.5), 4.4rem);
+            background: color.adjust($greyDark, $lightness: 10%);
+            border-radius: mw(.25);
             display: flex;
             align-items: center;
             justify-content: center;
             transition: background-color $dt $de, opacity $dt $de;
-            @include media(1440){
-                width: max(mw(3), 3rem);
-                height: max(mw(3), 3rem);
-            }
-            @include media(1024){
-                width: max(mw(4), 4rem);
-                height: max(mw(4), 4rem);
-            }
-            @include media(900){
-                width: max(mw(5), 5rem);
-                height: max(mw(5), 5rem);
-            }
             &.is-disabled{
-                opacity: .1;
+                opacity: .3;
                 pointer-events: none;
             }
             .iconify{
-                font-size: max( mw(1), 1rem);
-                color:$white;
-                @include media(900){
-                    font-size: max( mw(2), 2rem);
-                }
+                font-size: max(mw(2), 2rem);
+                color: $white;
             }
             &:hover{
-                background: #000000;
+                background: color.adjust($greyDark, $lightness: 20%);
             }
         }
-        &__arrow--left{
-            margin-left: mw(-1);
-            .iconify{
-                transform: rotate(90deg);
-            }
-        }
-        &__arrow--right{
-            margin-right: mw(-1);
-            .iconify{
-                transform: rotate(-90deg);
-            }
+        &__arrow--left .iconify{
+            transform: rotate(180deg);
         }
     &.marqueeImagesHolder{
         position: relative;
