@@ -52,6 +52,11 @@ html,body{
         font-family: $font-sans;
 		font-size: 5.8rem;
 		line-height: 1.05em;
+		.big{
+			font-size: 12rem;
+			letter-spacing: -5%;
+			line-height: 1em;
+		}
     }
 	h2,.h2{
 		font-size: 5.2rem;

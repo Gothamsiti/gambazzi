@@ -44,39 +44,31 @@ NuxtLink.BodyCTA(:to="$__url(blok.link?.cached_url+(blok.link?.cached_url?.inclu
 <style lang="scss">
 .BodyCTA{
 	&:not(.noStyles){
+		// box nero: label in alto a sinistra, icona in basso a destra
 		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap:2px;
+		flex-direction: column-reverse;
+		justify-content: space-between;
+		gap: mw(1);
+		min-height: mw(5);
+		padding: mw(1);
+		box-sizing: border-box;
+		background: $black;
+		color: $white !important;
+		border-radius: $dbr;
 		>*{
 			display: flex;
 			align-items: center;
-			justify-content: center;
-			border:1px solid $black;
-			height: 3.6rem;
 		}
 		.icon{
-			width: 3.6rem;
-			flex:0 0 3.6rem;
+			align-self: flex-end;
 		}
 		.label{
-			font-size: 1.6rem;;
-			flex: 0 0 auto;
-			padding: 0 mw(1);
+			font-size: 1.6rem;
 			text-transform: uppercase;
-			@include media(660){
-				padding: 0 mw(2);
-			}
 		}
 		&.iconOnly{
 			.label{
 				display: none;
-			}
-		}
-		&.black{
-			color: $white !important;
-			>*{
-				background: $black;
 			}
 		}
 	}
