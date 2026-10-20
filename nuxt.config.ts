@@ -156,8 +156,12 @@ export default defineNuxtConfig({
       title: process.env.SITE_NAME,
       link: [
         { rel: "icon", type: "shortcut icon", href: "/favicon.ico" },
+        { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16x16.png" },
+        { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32x32.png" },
         { rel: "icon", type: "image/png", sizes: "96x96", href: "/favicon-96x96.png" },
+        { rel: "icon", type: "image/png", sizes: "192x192", href: "/android-icon-192x192.png" },
         { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
+        { rel: "mask-icon", href: "/safari-pinned-tab.svg", color: "#38499b" },
         { rel: "manifest", href: "/site.webmanifest" },
         { rel: "preconnect", href: "https://a.storyblok.com" },
       ],

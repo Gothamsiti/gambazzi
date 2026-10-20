@@ -1,14 +1,15 @@
 <template lang="pug">
-  main#app(:class="{sbEditor,modalOpen}" :style="{ backgroundColor : 'white'}")
+  main#app(:class="{sbEditor,modalOpen,menuOpen}" :style="{ backgroundColor : 'white'}")
     NuxtRouteAnnouncer
     StoryblokComponent(:blok="{component:'MainHeader'}")
+    StoryblokComponent(:blok="{component:'MainMenu'}")
     NuxtPage
     StoryblokComponent(:blok="{component:'MainModalForms'}")
     StoryblokComponent(:blok="{component:'MainFooter'}")
 </template>
 <script setup>
     const { sbEditor } = useStoryblokEditor();
-    const { modalOpen } = useAppLayout();
+    const { modalOpen, menuOpen } = useAppLayout();
     useGoogleTagManager();
     onMounted(() => {
         reloadIfChromeIosBarsOverlay();
