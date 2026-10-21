@@ -3,7 +3,7 @@ header#mainHeader(ref="$header" :class="{hide: scroll.direction>0 && scrolled &&
     NuxtLink.logo(:to="$__url('/')")
         span(v-html="logo")
     nav.actions
-        NuxtLink.contacts(:to="$__url('contatti')") 
+        NuxtLink.contacts(:to="$__url('pages/contattaci')") 
             span(v-html="$__('contacts')")
         button.menu(type="button" @click="menuOpen = !menuOpen" :aria-label="menuOpen ? 'Chiudi menu' : 'Apri menu'" :aria-expanded="menuOpen")
             span.burger
