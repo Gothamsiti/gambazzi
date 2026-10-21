@@ -16,7 +16,15 @@ NuxtLink.BodyCTA(:to="$__url(blok.link?.cached_url+(blok.link?.cached_url?.inclu
 			opacity: (blok.animations || []).some(a => (a.properties || []).some(p => p.key === 'opacity')) ? 0 : 1
 		};
 	});
-	const ctaStyle = computed(() => ({...mw.style, ...initialOpacity.value}));
+	// il colore del testo passa anche da --cta-color perché lo stile base lo forza con !important
+	const ctaStyle = computed(() => ({
+		backgroundColor: blok.backgroundColor,
+		color: blok.color,
+		borderColor: blok.borderColor,
+		...(blok.color ? {'--cta-color': blok.color} : {}),
+		...mw.style,
+		...initialOpacity.value,
+	}));
 	const anchor = computed(() => blok.link?.anchor ? `#${blok.link.anchor}` : blok.link?.cached_url?.includes('#') ? `#${blok.link.cached_url.split('#')[1]}` : null);
 	const formSlug = computed(() => anchor.value?.includes('#modal-') ? anchor.value?.replace(/^#modal-/, '') : undefined);
 	const form = computed(() => { return anchor.value ? resolveForm(formSlug.value) : undefined; });
@@ -55,7 +63,8 @@ NuxtLink.BodyCTA(:to="$__url(blok.link?.cached_url+(blok.link?.cached_url?.inclu
 		padding: mw(1);
 		box-sizing: border-box;
 		background: $black;
-		color: $white !important;
+		color: var(--cta-color, $white) !important;
+		border: 1px solid transparent;
 		border-radius: $dbr;
 		>*{
 			display: flex;
@@ -77,7 +86,7 @@ NuxtLink.BodyCTA(:to="$__url(blok.link?.cached_url+(blok.link?.cached_url?.inclu
 		// (specificità maggiore della classe globale .white che forza il colore bianco)
 		&.white{
 			background: $white;
-			color: $black !important;
+			color: var(--cta-color, $black) !important;
 		}
 	}
 	&.big{

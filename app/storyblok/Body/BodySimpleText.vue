@@ -1,6 +1,5 @@
 <template lang="pug">
 section.BodySimpleText(ref="$el" :class="[blok.class, ...mw.classes]" :style="bgStyle" :id="blok.id")
-	| {{ animationsInited.value }}
 	StoryblokRichText(v-if="blok.text" :document="parsedText" :components="richTextComponents")
 </template>
 <script setup>
@@ -97,72 +96,20 @@ section.BodySimpleText(ref="$el" :class="[blok.class, ...mw.classes]" :style="bg
 		flex-direction: column;
 		align-items: flex-start;
 	}
-	&.solutions-card{
-		display: flex;
-		flex: 1;
-		padding:mw(1);
-		height: mw(35);
-		flex-direction: column;
-		color: $white;
-		img{
-			height: mw(19);
-			object-fit: cover;
-		}
-		>*{
-			min-width: 100%;
-			&:first-child{
-				margin-bottom:mw(3);
-			}
-			&:last-child{
-				border-top: 1px solid rgba($white, 0.3);
-				margin-top:auto;
-				padding-top: mw(1);
-			}
-		}
-		&:nth-child(1){ background-color: $greyDark; }
-		&:nth-child(2){ background-color: color.adjust($greyDark, $lightness: 20%); width:mw(20); flex:0 0 mw(20);	}
-		&:nth-child(3){ background-color: color.adjust($greyDark, $lightness: 20%); width:mw(20); flex:0 0 mw(20); }
-		@include media(1250){
-			&:nth-child(2),&:nth-child(3){ width:mw(25); flex:0 0 mw(25); }
-		}
-		@include media(980){
-			height: mw(45);
-			>*{
-				min-width: 100%;
-				&:first-child{
-					height: mw(20);
-					flex: 0 0 mw(20);
-				}
-			}
-			img{
-				height: mw(20);
-			}
-		}
-		@include media(900){
-			flex: 1 !important;
-			width: 100% !important;
-			height: auto !important;
-			padding: mw(8) mw(1);
-			>*{
-				height: auto !important;
-				&:first-child{
-					height: mw(60) !important;
-					flex: 0 0 mw(60) !important;
-					background:$white;
-				}
-				img{
-					width: 100% !important;
-					height: 100% !important;
-					object-fit: contain;
-				}
-			}
-		}
-		@include media(660){
-			padding: mw(2) mw(2) mw(10) mw(2);
-		}
-	}
 	&.align-items-center{
 		align-items: center;
+	}
+	.label, .labelWhite{
+		color: $text;
+		border: 1px solid $text;
+		padding: 1.5rem 2rem;
+		border-radius: 10rem;
+		margin-bottom: 2rem;
+		display: inline-block;
+	}
+	.labelWhite{
+		color: $white;
+		border-color: $white;
 	}
 }
 </style>

@@ -59,7 +59,6 @@ header#mainHeader{
     left: 0;
     width: 100%;
     box-sizing: border-box;
-    // sopra al MainMenu (z-index 3), così l'header è condiviso anche a menu aperto
     z-index: 4 !important;
     color: $black;
     transition: opacity $dt $de, color $dt $de;
@@ -112,7 +111,6 @@ header#mainHeader{
             }
         }
     }
-    // a menu aperto il burger diventa una X
     &.menuOpen .menu .burger{
         span:nth-child(1){
             transform: translateY(calc(.4em - .5px)) rotate(45deg);

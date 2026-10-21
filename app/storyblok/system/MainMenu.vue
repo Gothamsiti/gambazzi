@@ -31,11 +31,10 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    padding: mw(4) mw(1) mw(2);
+    padding: mw(4) mw(2) mw(2);
     box-sizing: border-box;
     background: $black;
     color: $white;
-    // sotto l'header (z-index 4), che resta visibile e condiviso
     z-index: 3 !important;
     overflow-y: auto;
     overscroll-behavior: contain;
@@ -64,7 +63,6 @@
             gap: 1.6rem;
         }
     }
-    // override degli stili di BodyCTA: link testuali senza box
     .BodyCTA{
         display: inline-flex;
         flex-direction: row;
@@ -93,7 +91,7 @@
     }
     .right .BodyCTA{
         .label{
-            font-size: 2.2rem;
+            font-size: 2.4rem;
             font-weight: 300;
         }
         // la prima voce di destra è il titolo della sezione
