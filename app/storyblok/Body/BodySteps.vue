@@ -2,20 +2,24 @@
 section.BodySteps(v-if="steps.length" :id="blok.id || undefined" :class="mw.classes" :style="bgStyle")
 	.label(v-if="blok.label") {{ blok.label }}
 	.arrows(v-if="steps.length > 1")
-		.arrow.arrow--up(:class="{ 'is-disabled': current === 0 }" @click="go(-1)" role="button" aria-label="Step precedente")
-			Icon(:name="'gotham:arrow-right'")
-		.arrow.arrow--down(:class="{ 'is-disabled': current === steps.length - 1 }" @click="go(1)" role="button" aria-label="Step successivo")
-			Icon(:name="'gotham:arrow-right'")
-	.numbers
-		.h1.number(v-for="(step, i) in steps" :key="`number-${step._uid}`" :class="{ active: i === current }" :aria-hidden="i !== current") {{ formatNumber(i) }}
-	.steps
-		.step(v-for="(step, i) in steps" :key="step._uid" :class="{ active: i === current }" :aria-hidden="i !== current")
+		button.arrow.arrow--up(type="button" :class="{ 'is-disabled': current === 0 }" :aria-disabled="current === 0" @click="go(-1)" :aria-label="label('previousStep', 'Step precedente')" :aria-controls="stepsId")
+			Icon(:name="'gotham:arrow-right'" aria-hidden="true")
+		button.arrow.arrow--down(type="button" :class="{ 'is-disabled': current === steps.length - 1 }" :aria-disabled="current === steps.length - 1" @click="go(1)" :aria-label="label('nextStep', 'Step successivo')" :aria-controls="stepsId")
+			Icon(:name="'gotham:arrow-right'" aria-hidden="true")
+	.numbers(aria-hidden="true")
+		.h1.number(v-for="(step, i) in steps" :key="`number-${step._uid}`" :class="{ active: i === current }") {{ formatNumber(i) }}
+	.steps(:id="stepsId" aria-live="polite")
+		.step(v-for="(step, i) in steps" :key="step._uid" :class="{ active: i === current }" :aria-hidden="i !== current" :inert="i !== current" role="group" :aria-label="`${i + 1} / ${steps.length}`")
 			StoryblokComponent(:blok="step" v-editable="step")
 </template>
 <script setup>
 	const {blok} = defineProps(["blok"]);
 	const mw = useMwClass(() => blok.class);
 	const steps = computed(() => blok.steps || []);
+	const stepsId = `steps-${blok._uid}`;
+	const { $__ } = useNuxtApp();
+	// finché le label non sono su Storyblok $__ restituisce la chiave: in quel caso si usa il fallback
+	const label = (key, fallback) => { const s = $__(key); return s && s !== key ? s : fallback; };
 	const current = ref(0);
 
 	const bgStyle = computed(() => ({
@@ -57,6 +61,10 @@ section.BodySteps(v-if="steps.length" :id="blok.id || undefined" :class="mw.clas
 	}
 	.arrow{
 		cursor: pointer;
+		padding: 0;
+		border: 0;
+		color: inherit;
+		font: inherit;
 		width: max(mw(4.5), 4.4rem);
 		height: max(mw(4.5), 4.4rem);
 		background: color.adjust($greyDark, $lightness: 10%);

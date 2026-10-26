@@ -1,6 +1,6 @@
 <template lang="pug">
-#MainMenu(v-if="menu" :class="{open: menuOpen}" :aria-hidden="!menuOpen" :inert="!menuOpen")
-    nav.items
+#MainMenu(v-if="menu" ref="$el" :class="{open: menuOpen}" :aria-hidden="!menuOpen" :inert="!menuOpen")
+    nav.items(:aria-label="label('mainNavigation', 'Navigazione principale')")
         .left
             StoryblokComponent(v-for="item of menu.itemsLeft" :blok="item" :key="item._uid" v-editable="item")
         .right
@@ -16,7 +16,22 @@
     const editingMenu = computed(() => sbEditor.value && /(^|\/)system\/mainmenu\/?$/.test(route.path));
     if (editingMenu.value) menuOpen.value = true;
     watch(() => route.fullPath, () => menuOpen.value = editingMenu.value);
-    const onKeydown = (e) => { if (e.key === 'Escape') menuOpen.value = false; };
+    const { $__ } = useNuxtApp();
+    // finché le label non sono su Storyblok $__ restituisce la chiave: in quel caso si usa il fallback
+    const label = (key, fallback) => { const s = $__(key); return s && s !== key ? s : fallback; };
+
+    // all'apertura il focus va sulla prima voce, così la navigazione da tastiera parte dal menu
+    const $el = ref();
+    watch(menuOpen, (open) => {
+        if (!open || editingMenu.value) return;
+        nextTick(() => $el.value?.querySelector('a[href], button')?.focus({ preventScroll: true }));
+    });
+    const onKeydown = (e) => {
+        if (e.key !== 'Escape' || !menuOpen.value) return;
+        menuOpen.value = false;
+        // chiuso da tastiera, il focus torna al bottone che lo apre
+        document.querySelector('#mainHeader button.menu')?.focus();
+    };
     onMounted(() => window.addEventListener('keydown', onKeydown));
     onUnmounted(() => window.removeEventListener('keydown', onKeydown));
 </script>
@@ -79,9 +94,12 @@
         }
         .label{
             text-transform: none;
+            // underline disegnato come background per poterne animare la larghezza
+            background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 0 .04em;
+            transition: background-size $dt $de;
         }
-        &:hover, &.router-link-active{
-            opacity: .6;
+        &:hover .label, &.router-link-active .label{
+            background-size: 100% .04em;
         }
     }
     .left .BodyCTA .label{
@@ -93,6 +111,7 @@
         .label{
             font-size: 2.4rem;
             font-weight: 300;
+            background-position: 100% 100%;
         }
         // la prima voce di destra è il titolo della sezione
         &:first-child{
@@ -119,6 +138,7 @@
         }
         .right .BodyCTA .label{
             font-size: 1.8rem;
+            background-position: 0 100%;
         }
     }
 }

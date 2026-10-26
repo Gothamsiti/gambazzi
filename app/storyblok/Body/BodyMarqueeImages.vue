@@ -1,7 +1,7 @@
 <template lang="pug">
 .BodyMarqueeImages(:class="[blok.class, ...mw.classes]" :style="mw.style")
     GothamCarousel(
-        v-slot="{ item }"
+        v-slot="{ item, index }"
         loop
         wheel-gestures
         drag-free
@@ -9,7 +9,9 @@
         :auto-scroll="{ speed: 1, startDelay: 0, playOnInit: true, stopOnInteraction: false, stopOnMouseEnter: false }"
         :ui="{ container: 'BodyHorizontalScrollImages__container', item: 'BodyHorizontalScrollImages__item' }"
     )
+        //- le copie aggiunte per riempire il loop non vanno rilette dagli screen reader
         imageItem(
+            :aria-hidden="index >= (blok.images?.length || 0) ? 'true' : undefined"
             :blok="item"
             :sizeMode="'aspect-ratio-height'"
             sizes="(max-width: 768px) 80vw, 40vw"

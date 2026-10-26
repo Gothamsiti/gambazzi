@@ -1,19 +1,22 @@
 <template lang="pug">
 header#mainHeader(ref="$header" :class="{hide: scroll.direction>0 && scrolled && !menuOpen, light: light || menuOpen, menuOpen}")
-    NuxtLink.logo(:to="$__url('/')")
-        span(v-html="logo")
+    NuxtLink.logo(:to="$__url('/')" :aria-label="label('goToHome', 'Gambazzi - Homepage')")
+        span(v-html="logo" aria-hidden="true")
     nav.actions
-        NuxtLink.contacts(:to="$__url('pages/contattaci')") 
+        NuxtLink.contacts(:to="$__url('pages/contattaci')")
             span(v-html="$__('contacts')")
-        button.menu(type="button" @click="menuOpen = !menuOpen" :aria-label="menuOpen ? 'Chiudi menu' : 'Apri menu'" :aria-expanded="menuOpen")
-            span.burger
+        button.menu(type="button" @click="menuOpen = !menuOpen" :aria-label="menuOpen ? label('closeMenu', 'Chiudi menu') : label('openMenu', 'Apri menu')" :aria-expanded="menuOpen ? 'true' : 'false'" aria-controls="MainMenu")
+            span.burger(aria-hidden="true")
                 span
                 span
                 span
-            span.label {{ menuOpen ? $__('close') : $__('menu') }}
+            span.label(aria-hidden="true") {{ menuOpen ? $__('close') : $__('menu') }}
 </template>
 <script setup>
     import logo from '~/assets/logo.svg?raw';
+    const { $__ } = useNuxtApp();
+    // finché le label non sono su Storyblok $__ restituisce la chiave: in quel caso si usa il fallback
+    const label = (key, fallback) => { const s = $__(key); return s && s !== key ? s : fallback; };
     const { sizes, scroll } = useSizes();
     const { menuOpen } = useAppLayout();
     const route = useRoute();

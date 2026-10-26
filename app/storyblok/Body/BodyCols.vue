@@ -4,17 +4,20 @@
         BodyColsContent(:blok="blok" :noeditable="noeditable" @proceed="emit('proceed')")
     section.BodyCols(v-else ref="scrollRoot" :id="blok.id" :class="['cols-'+blok.cols.length, blok.flexClass, ...mw.classes]" :style="bgStyle")
         BodyColsContent(:blok="blok" :noeditable="noeditable" @proceed="emit('proceed')")
-    .BodyCols__scrollbar(v-if="isHorizontalScroll && showScrollbar" ref="trackRef" @click="onTrackClick" @pointerdown="onTrackPointerDown")
+    .BodyCols__scrollbar(v-if="isHorizontalScroll && showScrollbar" ref="trackRef" aria-hidden="true" @click="onTrackClick" @pointerdown="onTrackPointerDown")
         .BodyCols__scrollbar-thumb(:style="thumbStyle" @pointerdown="onThumbPointerDown" @click.stop)
     .BodyCols__arrows(v-if="isHorizontalScroll && showArrows" :style="arrowsStyle")
-        .BodyCols__arrow--left(:class="{ 'is-disabled': !canScrollLeft }" @click="moveScroll(-1)")
-            Icon(:name="'gotham:arrow-right'")
-        .BodyCols__arrow--right(:class="{ 'is-disabled': !canScrollRight }" @click="moveScroll(1)")
-            Icon(:name="'gotham:arrow-right'")
+        button.BodyCols__arrow--left(type="button" :class="{ 'is-disabled': !canScrollLeft }" :aria-disabled="!canScrollLeft" @click="moveScroll(-1)" :aria-label="label('previous', 'Precedente')")
+            Icon(:name="'gotham:arrow-right'" aria-hidden="true")
+        button.BodyCols__arrow--right(type="button" :class="{ 'is-disabled': !canScrollRight }" :aria-disabled="!canScrollRight" @click="moveScroll(1)" :aria-label="label('next', 'Successivo')")
+            Icon(:name="'gotham:arrow-right'" aria-hidden="true")
 </template>
 <script setup>
     import { gsap } from "gsap";
     const { sbEditor } = useStoryblokEditor();
+    const { $__ } = useNuxtApp();
+    // finché le label non sono su Storyblok $__ restituisce la chiave: in quel caso si usa il fallback
+    const label = (key, fallback) => { const s = $__(key); return s && s !== key ? s : fallback; };
     const {blok}=defineProps(['blok', 'noeditable', 'story', 'rels']);
     const mw = useMwClass(() => blok.customClass);
     const isHorizontalScroll = computed(() => mw.classes.includes('horizontalScroll'));
@@ -71,7 +74,7 @@
                 const copy = document.querySelectorAll('#page-head-copy *');
                 const tl = gsap.timeline();
                 tl.fromTo(casanova, { y:40, opacity: 0 }, { y:0, opacity: 1, duration: 1 });
-                tl.fromTo(copy, { y:40, opacity: 0 }, { y:0, opacity: 1, duration: 1,onComplete: () => { videoElement.play();} }, "-=.5");
+                tl.fromTo(copy, { y:40, opacity: 0 }, { y:0, opacity: 1, duration: 1,onComplete: () => { if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) videoElement.play(); } }, "-=.5");
                 tl.to(video, { opacity: 1, duration: 1 });
                 tl.to(videoElement, { scale: 1, duration: 1 }, "-=1");
                 tl.fromTo(pageHead, { color: '#000000' }, { color: '#ffffff', duration: 1 }, "-=1");
@@ -207,6 +210,10 @@
         &__arrow--left,
         &__arrow--right{
             cursor: pointer;
+            padding: 0;
+            border: 0;
+            color: inherit;
+            font: inherit;
             pointer-events: all;
             width: max(mw(4.5), 4.4rem);
             height: max(mw(4.5), 4.4rem);

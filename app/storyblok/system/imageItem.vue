@@ -1,5 +1,5 @@
 <template lang="pug">
-.imageItem(v-if="isSvg" :class="[sizeMode, 'imageItem--svg']" role="img" :aria-label="alt" :title="title" v-html="svg")
+.imageItem(v-if="isSvg" :class="[sizeMode, 'imageItem--svg']" :role="alt ? 'img' : undefined" :aria-label="alt || undefined" :aria-hidden="alt ? undefined : 'true'" :title="title" v-html="svg")
 .imageItem(v-else :class="sizeMode")
     img(
         v-if="image"
@@ -32,14 +32,8 @@
         : { data: ref(null) };
     const image = computed(() => isSvg.value ? null : useStoryblokImage(blok?.filename, sizes));
 
-    const alt = computed(() => {
-        if(blok.alt){
-            return blok.alt
-        }else{
-            let str = blok?.filename.replace(/^.*[\\/]/, '');
-            return str.split('.')[0]
-        }
-    })
+    // senza alt su Storyblok l'immagine è trattata come decorativa: il nome del file non descrive nulla
+    const alt = computed(() => blok?.alt || '')
     const title = computed(() => blok?.title || undefined)
     if(priority && !isSvg.value){
         useHead(() => {

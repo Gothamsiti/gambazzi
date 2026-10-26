@@ -22,7 +22,9 @@
 	const posterSrc = computed(() => toWebpAssetUrl(blok.poster?.filename));
 	const videoTitle = computed(() => blok.asset?.title || undefined);
 
-	const autoplay = computed(() => blok.autoplay !== false);
+	// con prefers-reduced-motion il video non parte da solo: resta il poster
+	const reducedMotion = ref(false);
+	const autoplay = computed(() => blok.autoplay !== false && !reducedMotion.value);
 	const loop = computed(() => blok.loop !== false);
 	const muted = computed(() => blok.muted !== false);
 
@@ -34,6 +36,7 @@
 
 	onMounted(() => {
 		if (!$video.value) return;
+		reducedMotion.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 		$video.value.muted = muted.value;
 		observer = new IntersectionObserver((entries) => entries.forEach(entry => {
 			inView.value = entry.isIntersecting;

@@ -4,10 +4,10 @@ section.BodyStoriesList(v-if="stories.length || sbEditor" :id="blok.id || undefi
 		.title(v-if="blok.title?.[0]")
 			StoryblokComponent(:blok="blok.title[0]" v-editable="blok.title[0]")
 		.arrows(v-if="showArrows")
-			.arrow.arrow--left(:class="{ 'is-disabled': !canScrollLeft }" @click="moveScroll(-1)")
-				Icon(:name="'gotham:arrow-right'")
-			.arrow.arrow--right(:class="{ 'is-disabled': !canScrollRight }" @click="moveScroll(1)")
-				Icon(:name="'gotham:arrow-right'")
+			button.arrow.arrow--left(type="button" :class="{ 'is-disabled': !canScrollLeft }" :aria-disabled="!canScrollLeft" @click="moveScroll(-1)" :aria-label="label('previous', 'Precedente')")
+				Icon(:name="'gotham:arrow-right'" aria-hidden="true")
+			button.arrow.arrow--right(type="button" :class="{ 'is-disabled': !canScrollRight }" :aria-disabled="!canScrollRight" @click="moveScroll(1)" :aria-label="label('next', 'Successivo')")
+				Icon(:name="'gotham:arrow-right'" aria-hidden="true")
 	.list(ref="scrollRoot")
 		NuxtLink.card(v-for="story in stories" :key="story.uuid" :to="$__url(story.full_slug)")
 			imageItem.image(v-if="story.content?.cardImage?.filename" :blok="story.content.cardImage" sizes="(max-width: 550px) 80vw, 35vw")
@@ -21,6 +21,9 @@ section.BodyStoriesList(v-if="stories.length || sbEditor" :id="blok.id || undefi
 <script setup>
 	const {blok} = defineProps(["blok"]);
 	const mw = useMwClass(() => blok.class);
+	const { $__ } = useNuxtApp();
+	// finché le label non sono su Storyblok $__ restituisce la chiave: in quel caso si usa il fallback
+	const label = (key, fallback) => { const s = $__(key); return s && s !== key ? s : fallback; };
 	const { sbEditor } = useStoryblokEditor();
 	const { currentLanguage, defaultLanguage } = useLanguage();
 	const { $__parseEndpoint } = useNuxtApp();
@@ -93,6 +96,10 @@ section.BodyStoriesList(v-if="stories.length || sbEditor" :id="blok.id || undefi
 	}
 	.arrow{
 		cursor: pointer;
+		padding: 0;
+		border: 0;
+		color: inherit;
+		font: inherit;
 		width: max(mw(4.5), 4.4rem);
 		height: max(mw(4.5), 4.4rem);
 		background: color.adjust($greyDark, $lightness: 10%);

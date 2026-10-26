@@ -89,7 +89,8 @@
             const { WheelGesturesPlugin } = await import('embla-carousel-wheel-gestures');
             plugins.push(WheelGesturesPlugin());
         }
-        if (props.autoScroll) {
+        // lo scorrimento automatico non parte per chi ha chiesto di ridurre il movimento
+        if (props.autoScroll && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
             const { default: AutoScroll } = await import('embla-carousel-auto-scroll');
             plugins.push(AutoScroll(typeof props.autoScroll === 'object' ? props.autoScroll : {}));
         }

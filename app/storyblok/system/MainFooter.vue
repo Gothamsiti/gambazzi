@@ -1,5 +1,5 @@
 <template lang="pug">
-#MainFooter()
+footer#MainFooter
 	StoryblokComponent(v-if="_footer.body?.length" v-for="item of _footer.body" :blok="item" :key="item._uid")
 </template>
 <script setup>

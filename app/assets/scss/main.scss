@@ -191,3 +191,26 @@ html,body{
 		
 	}
 }
+
+// accessibilità: focus sempre visibile durante la navigazione da tastiera.
+// currentColor garantisce il contrasto sia sulle sezioni chiare che su quelle scure
+:focus-visible{
+	outline: 2px solid currentColor;
+	outline-offset: 4px;
+}
+// i landmark ricevono il focus solo in modo programmatico (AccessibilitySkip), senza bisogno di outline
+#main, #mainHeader, #MainFooter{
+	&:focus{
+		outline: none;
+	}
+}
+@media (prefers-reduced-motion: reduce){
+	html{
+		scroll-behavior: auto;
+	}
+	*, *::before, *::after{
+		transition-duration: .01ms !important;
+		animation-duration: .01ms !important;
+		animation-iteration-count: 1 !important;
+	}
+}

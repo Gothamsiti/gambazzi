@@ -1,5 +1,5 @@
 <template lang="pug">
-.index
+main.index#main
     StoryblokComponent(v-if="story?.content?.component" :blok="story.content" :first_published_at="story.first_published_at" :created_at="story.created_at")
 </template>
 <script setup>
