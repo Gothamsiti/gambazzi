@@ -175,21 +175,57 @@
 		.fieldFile{
 			display: flex;
 			flex-direction: column;
-			gap: 1rem;
+			gap: .8rem;
+			cursor: pointer;
+			// nascosto ma ancora raggiungibile da tastiera: Invio/Spazio aprono il selettore file
 			input[type="file"]{
-				display: none;
+				position: absolute;
+				width: 1px;
+				height: 1px;
+				opacity: 0;
+				overflow: hidden;
+				pointer-events: none;
+			}
+			.label label{
+				font-size: 1.2rem;
+				text-transform: uppercase;
+				color: var(--form-muted) !important;
+				cursor: pointer;
 			}
 			.files{
-				display: inline-block;
-				padding: 1rem 2rem;
+				padding: 1.4rem 1rem;
 				border: 1px solid var(--form-line);
 				border-radius: .4rem;
-				cursor: pointer;
+				font-size: 1.6rem;
+				font-weight: 300;
+				transition: border-color $dt $de;
 				.file{
 					display: flex;
 					align-items: center;
 					justify-content: space-between;
+					gap: 1rem;
+					span{
+						overflow: hidden;
+						text-overflow: ellipsis;
+						white-space: nowrap;
+					}
 				}
+				.icon{
+					flex: 0 0 auto;
+					width: 2rem;
+					height: 2rem;
+				}
+			}
+			&:hover .files,
+			&.compiled .files{
+				border-color: currentColor;
+			}
+			&:not(.compiled) .files{
+				color: var(--form-muted) !important;
+			}
+			&:has(input:focus-visible) .files{
+				outline: 1px solid currentColor;
+				outline-offset: 2px;
 			}
 		}
 		.fieldSelect{
