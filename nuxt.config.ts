@@ -32,6 +32,7 @@ export default defineNuxtConfig({
     },
   },
   runtimeConfig: {
+    domain: process.env.DOMAIN,
     defaultLanguage: process.env.DEFAULT_LANGUAGE,
     storyblokSpaceId: process.env.STORYBLOK_SPACE_ID,
     r2: {
