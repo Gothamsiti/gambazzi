@@ -32,17 +32,7 @@ export default defineNuxtConfig({
     },
   },
   runtimeConfig: {
-    domain: process.env.SITE_URL,
-    maxAge: process.env.DEFAULT_EXPIRE ? parseInt(process.env.DEFAULT_EXPIRE) : 0,
     defaultLanguage: process.env.DEFAULT_LANGUAGE,
-    env: process.env.ENVIROMENT,
-    cloudflare: {
-      zoneID: process.env.CLOUDFLARE_ZONE_ID,
-      email: process.env.CLOUDFLARE_EMAIL,
-      apiKey: process.env.CLOUDFLARE_API_KEY
-    },
-    framesDomain: process.env.FRAMES_DOMAIN,
-    cachePurgeToken: process.env.CACHE_PURGE_TOKEN,
     storyblokSpaceId: process.env.STORYBLOK_SPACE_ID,
     r2: {
       accessKey: process.env.R2_ACCESS_KEY,
@@ -50,15 +40,8 @@ export default defineNuxtConfig({
       bucket: process.env.R2_BUCKET,
       endpoint: process.env.R2_ENDPOINT,
     },
-    nginx: {
-      cacheDir: process.env.NGINX_CACHE_DIR,
-      purgeCommand: process.env.NGINX_PURGE_COMMAND,
-    },
     public: {
-      env: process.env.ENVIROMENT,
-      framesDomain: process.env.FRAMES_DOMAIN,
-      framesUseLocal: process.env.FRAMES_USE_LOCAL === 'true',
-      normalizeScroll: process.env.NORMALIZE_SCROLL ? process.env.NORMALIZE_SCROLL === 'true' : false,
+      normalizeScroll: process.env.NORMALIZE_SCROLL === 'true',
     }
   },
   basicAuth: {
