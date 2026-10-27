@@ -99,6 +99,8 @@
     position: relative;
     display: flex;
     box-sizing: border-box;
+    // come flex item può stringersi sotto il min-content (es. box con CTA accanto a un'immagine a larghezza fissa su tablet)
+    min-width: 0;
     padding: 0;
     background-image: var(--bg-image, none);
     background-size: cover;

@@ -141,5 +141,15 @@
             background-position: 0 100%;
         }
     }
+    @include media(550){
+        padding: mw(20) mw(5) mw(8);
+        .items{
+            gap: mw(10);
+        }
+        .left .BodyCTA .label,
+        .right .BodyCTA:first-child .label{
+            font-size: 3.4rem;
+        }
+    }
 }
 </style>

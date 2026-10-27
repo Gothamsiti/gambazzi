@@ -22,6 +22,11 @@ ul.BodyList(v-editable="blok" :class="mw.classes" :style="mw.style")
         line-height: 1em;
         text-transform: uppercase;
         border-bottom: 1px solid currentColor;
+        @include media(550){
+            gap: mw(2);
+            padding: mw(4) 0;
+            font-size: 1.8rem;
+        }
         &:first-child{
             padding-top: 0;
         }

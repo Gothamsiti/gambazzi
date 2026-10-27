@@ -3,6 +3,7 @@ header#mainHeader(ref="$header" :class="{hide: scroll.direction>0 && scrolled &&
     NuxtLink.logo(:to="$__url('/')" :aria-label="label('goToHome', 'Gambazzi - Homepage')")
         span(v-html="logo" aria-hidden="true")
     nav.actions
+        LanguageSelector
         NuxtLink.contacts(:to="$__url('pages/contattaci')")
             span(v-html="$__('contacts')")
         button.menu(type="button" @click="menuOpen = !menuOpen" :aria-label="menuOpen ? label('closeMenu', 'Chiudi menu') : label('openMenu', 'Apri menu')" :aria-expanded="menuOpen ? 'true' : 'false'" aria-controls="MainMenu")
@@ -123,6 +124,23 @@ header#mainHeader{
         }
         span:nth-child(3){
             transform: translateY(calc(-.4em + .5px)) rotate(-45deg);
+        }
+    }
+    @include media(980){
+        .logo svg{
+            width: mw(12);
+        }
+    }
+    @include media(550){
+        padding: mw(4) mw(5);
+        .logo svg{
+            width: mw(24);
+        }
+        .actions{
+            gap: mw(6);
+        }
+        .contacts{
+            display: none;
         }
     }
     &.light{

@@ -28,6 +28,8 @@
 <style lang="scss">
   #app{
     position: relative;
+    // rete di sicurezza contro lo scroll orizzontale; clip (a differenza di hidden) non rompe position: sticky
+    overflow-x: clip;
     background-color: $bkg !important;
     z-index: 1;
     >*{

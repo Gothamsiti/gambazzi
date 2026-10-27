@@ -77,6 +77,14 @@ NuxtLink.BodyCTA(:to="$__url(blok.link?.cached_url+(blok.link?.cached_url?.inclu
 			font-size: 1.6rem;
 			text-transform: uppercase;
 		}
+		@include media(980){
+			width: mw(35);
+		}
+		@include media(550){
+			width: mw(70);
+			min-height: mw(18);
+			padding: mw(3);
+		}
 		&.iconOnly{
 			.label{
 				display: none;

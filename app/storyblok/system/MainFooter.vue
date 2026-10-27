@@ -54,6 +54,27 @@ footer#MainFooter
 					aspect-ratio: 1 / 1;
 				}
 			}
+			// 2x2 su tablet; su mobile una sola colonna (logo, menu, contatti, privacy)
+			@include media(980){
+				grid-template-columns: repeat(2, 1fr);
+			}
+			@include media(550){
+				grid-template-columns: 1fr;
+				>*{
+					&:first-child, &:nth-child(3), &:nth-child(4){
+						padding: mw(5);
+						aspect-ratio: auto;
+					}
+					&:nth-child(2) .BodyCols{
+						padding: mw(5);
+						aspect-ratio: auto;
+						gap: mw(3);
+					}
+					&:nth-child(3){
+						order: 1;
+					}
+				}
+			}
 		}
 	}
 }

@@ -168,5 +168,16 @@ section.BodyStoriesList(v-if="stories.length || sbEditor" :id="blok.id || undefi
 		justify-content: center;
 		padding: mw(6) mw(2) 0;
 	}
+	@include media(550){
+		gap: mw(8);
+		padding: mw(20) 0;
+		.head, .list, .cta{
+			padding-left: mw(5);
+			padding-right: mw(5);
+		}
+		.list{
+			gap: mw(4);
+		}
+	}
 }
 </style>

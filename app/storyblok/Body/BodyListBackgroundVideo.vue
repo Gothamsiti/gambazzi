@@ -48,6 +48,9 @@
                 position: sticky;
                 top: 0;
                 padding-top: mw(1);
+                @include media(820){
+                    flex-direction: column;
+                }
             }
         }
         .body{
@@ -81,6 +84,43 @@
             padding-bottom: mw(2);
             .BodyCTA{
                 grid-column: 3;
+            }
+        }
+    }
+    @include media(980){
+        .content{
+            .body, .cta{
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .cta .BodyCTA{
+                margin-top: mw(2);
+                grid-column: 2;
+                width: auto;
+            }
+        }
+    }
+    @include media(550){
+        padding-bottom: mw(25);
+        .content{
+            padding: 0 mw(5);
+            .intro .title{
+                flex-direction: column;
+                padding-top: mw(20);
+            }
+            .body{
+                grid-template-columns: 1fr;
+                gap: mw(4);
+                > .BodyColsWrap > .BodyCols{
+                    padding: mw(4);
+                }
+            }
+            .cta{
+                display: block;
+                padding-bottom: mw(5);
+                margin-top: mw(4);
+                .BodyCTA{
+                    width: 100%;
+                }
             }
         }
     }
