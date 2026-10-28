@@ -34,15 +34,16 @@ footer#MainFooter
 					.BodyCols{
 						flex-direction: column;
 						padding:mw(2) mw(3);
-						aspect-ratio: 1 / 1;
+						box-sizing: border-box;
 						align-self: stretch;
 						justify-content: space-between;
-						font-weight: bold;
+						background: #E7E7E7;
+						font-size: 2.2rem;
 					}
 				}
 				&:nth-child(3){
 					padding:mw(2);
-					aspect-ratio: 1 / 1;
+					box-sizing: border-box;
 					display: flex;
 					flex-direction: column;
 					align-items: flex-start;
@@ -51,7 +52,11 @@ footer#MainFooter
 				}
 				&:nth-child(4){
 					padding:mw(2);
-					aspect-ratio: 1 / 1;
+					background: $white;
+					display: flex;
+					flex-direction: column;
+					align-items: flex-start;
+					justify-content: flex-end;
 				}
 			}
 			// 2x2 su tablet; su mobile una sola colonna (logo, menu, contatti, privacy)

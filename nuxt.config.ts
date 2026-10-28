@@ -69,7 +69,7 @@ export default defineNuxtConfig({
   fonts: {
     defaults: { subsets: ['latin'] },
     families: [
-      { name: 'Onest', provider: 'google', weights: [300, 700], preload: true }
+      { name: 'Onest', provider: 'google', weights: [100, 300, 700], preload: true }
     ],
   },
   icon: {
