@@ -47,7 +47,7 @@
                 justify-content: space-between;
                 position: sticky;
                 top: 0;
-                padding-top: mw(1);
+                padding-top: mw(4);
                 @include media(820){
                     flex-direction: column;
                 }
