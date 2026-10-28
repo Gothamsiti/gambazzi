@@ -154,6 +154,16 @@ html,body{
     .full-height-percentage{
         height: 100%;
     }
+	.fill-height{
+		align-self: stretch;
+		position: relative;
+		min-height: mw(28);
+		height: auto !important;
+		img{
+			position: absolute;
+			inset: 0;
+		}
+	}
     .full-width{
         width: 100%;
     }
